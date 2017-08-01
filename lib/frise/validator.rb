@@ -83,7 +83,7 @@ module Frise
         end
       end
 
-      def validate(root, config, schema_file, validators = nil, exit_on_fail = true)
+      def validate(config, schema_file, validators = nil, exit_on_fail = true, root = config)
         schema = parse_symbols(Parser.parse(schema_file))
 
         error_messages = []
@@ -97,6 +97,12 @@ module Frise
           exit 1 if exit_on_fail
         end
         error_messages
+      end
+
+      def validate_at(config, at_path, schema_file, validators = nil, exit_on_fail = true, root = config)
+        return validate(config, schema_file, validators, exit_on_fail, root) if at_path.empty?
+        key = at_path.shift
+        validate_at(config[key], at_path, schema_file, validators, exit_on_fail, root)
       end
     end
   end

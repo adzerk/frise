@@ -41,7 +41,7 @@ module Frise
 
     def validate(config, schema_files, exit_on_fail = true)
       schema_files.each do |schema_file|
-        Validator.validate(config, config, schema_file, @validators, exit_on_fail)
+        Validator.validate(config, schema_file, @validators, exit_on_fail)
       end
       config
     end

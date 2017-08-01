@@ -45,9 +45,20 @@ module Frise
         end
       end
 
+      def merge_defaults_obj_at(config, at_path, defaults)
+        return merge_defaults_obj(config, defaults) if at_path.empty?
+        key = at_path.shift
+        config.merge(key => merge_defaults_obj_at(config[key], at_path, defaults))
+      end
+
       def merge_defaults(config, defaults_file, symbol_table = config)
         defaults = Parser.parse(defaults_file, symbol_table)
         merge_defaults_obj(config, defaults)
+      end
+
+      def merge_defaults_at(config, at_path, defaults_file, symbol_table = config)
+        defaults = Parser.parse(defaults_file, symbol_table)
+        merge_defaults_obj_at(config, at_path, defaults)
       end
     end
   end
