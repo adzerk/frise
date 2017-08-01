@@ -1,7 +1,6 @@
 require 'frise/defaults_loader'
 require 'frise/parser'
 require 'frise/validator'
-require 'yaml'
 
 module Frise
   class Loader

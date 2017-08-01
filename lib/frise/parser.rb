@@ -7,7 +7,7 @@ module Frise
         return {} unless File.file? file
         content = File.open(file).read
         content = Liquid::Template.parse(content).render symbol_table if symbol_table
-        YAML.load(content) || {}
+        YAML.safe_load(content, [], [], true) || {}
       end
     end
   end

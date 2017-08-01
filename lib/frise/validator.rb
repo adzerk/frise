@@ -2,7 +2,6 @@
 
 require 'frise/parser'
 require 'set'
-require 'yaml'
 
 module Boolean; end
 class TrueClass; include Boolean; end
