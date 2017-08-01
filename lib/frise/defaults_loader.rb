@@ -1,5 +1,4 @@
 require 'frise/parser'
-require 'liquid'
 
 module Frise
   module DefaultsLoader
