@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'frise/parser'
 require 'set'
 require 'yaml'
 
@@ -82,12 +83,20 @@ module Frise
         end
       end
 
-      def validate_config(root, config, schema_file, validators = nil)
-        schema = parse_symbols(YAML.load_file(schema_file) || {})
+      def validate(root, config, schema_file, validators = nil, exit_on_fail = true)
+        schema = parse_symbols(Parser.parse(schema_file))
 
-        errors = []
-        validate_object(root, '', config, schema, validators, errors)
-        errors
+        error_messages = []
+        validate_object(root, '', config, schema, validators, error_messages)
+
+        unless error_messages.empty?
+          puts "#{error_messages.length} config error(s) found:"
+          error_messages.each do |error|
+            puts " - #{error}"
+          end
+          exit 1 if exit_on_fail
+        end
+        error_messages
       end
     end
   end
