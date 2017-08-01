@@ -15,33 +15,36 @@ module Frise
 
     def load(config_file, exit_on_fail = true, symbol_table = nil)
       config = Parser.parse(config_file, symbol_table)
+      config_name = File.basename(config_file)
 
       @pre_loaders.each do |pre_loader|
         config = pre_loader.call(config)
       end
 
-      defaults_files = @defaults_load_paths.map do |defaults_dir|
-        File.join(defaults_dir, File.basename(config_file))
-      end
-
-      schema_files = @schema_load_paths.map do |schema_dir|
-        File.join(schema_dir, File.basename(config_file))
-      end
-
-      config = merge_defaults(config, defaults_files, symbol_table)
-      validate(config, schema_files, exit_on_fail)
+      config = merge_defaults(config, config_name)
+      validate(config, config_name, exit_on_fail)
     end
 
-    def merge_defaults(config, defaults_files, symbol_table = nil)
-      defaults_files.each do |defaults_file|
-        config = DefaultsLoader.merge_defaults(config, defaults_file, symbol_table || config)
+    def merge_defaults(config, defaults_name, symbol_table = nil)
+      merge_defaults_at(config, [], defaults_name, symbol_table)
+    end
+
+    def merge_defaults_at(config, at_path, defaults_name, symbol_table = nil)
+      @defaults_load_paths.map do |defaults_dir|
+        defaults_file = File.join(defaults_dir, defaults_name)
+        config = DefaultsLoader.merge_defaults_at(config, at_path, defaults_file, symbol_table || config)
       end
       config
     end
 
-    def validate(config, schema_files, exit_on_fail = true)
-      schema_files.each do |schema_file|
-        Validator.validate(config, schema_file, @validators, exit_on_fail)
+    def validate(config, schema_name, exit_on_fail = true)
+      validate_at(config, [], schema_name, exit_on_fail)
+    end
+
+    def validate_at(config, at_path, schema_name, exit_on_fail = true)
+      @schema_load_paths.map do |schema_dir|
+        schema_file = File.join(schema_dir, schema_name)
+        Validator.validate_at(config, at_path, schema_file, @validators, exit_on_fail)
       end
       config
     end

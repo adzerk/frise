@@ -101,8 +101,8 @@ module Frise
 
       def validate_at(config, at_path, schema_file, validators = nil, exit_on_fail = true, root = config)
         return validate(config, schema_file, validators, exit_on_fail, root) if at_path.empty?
-        key = at_path.shift
-        validate_at(config[key], at_path, schema_file, validators, exit_on_fail, root)
+        key, rest_path = at_path[0], at_path.drop(1)
+        validate_at(config[key], rest_path, schema_file, validators, exit_on_fail, root)
       end
     end
   end

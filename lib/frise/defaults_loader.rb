@@ -47,8 +47,8 @@ module Frise
 
       def merge_defaults_obj_at(config, at_path, defaults)
         return merge_defaults_obj(config, defaults) if at_path.empty?
-        key = at_path.shift
-        config.merge(key => merge_defaults_obj_at(config[key], at_path, defaults))
+        key, rest_path = at_path[0], at_path.drop(1)
+        config.merge(key => merge_defaults_obj_at(config[key], rest_path, defaults))
       end
 
       def merge_defaults(config, defaults_file, symbol_table = config)
