@@ -9,8 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['ShiftForward']
   spec.email         = ['info@shiftforward.eu']
 
-  spec.summary       = 'A config loading library.'
-  spec.description   = 'falta fazer'
+  spec.summary       = 'A Ruby config library supporting schema validation, default values and templating'
   spec.homepage      = 'https://github.com/ShiftForward/frise'
   spec.license       = 'Apache-2.0'
 
