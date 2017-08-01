@@ -1,15 +1,13 @@
 require 'frise/parser'
 require 'liquid'
 
-class Object
-  def boolean?
-    is_a?(TrueClass) || is_a?(FalseClass)
-  end
-end
-
 module Frise
   module DefaultsLoader
     class << self
+      def boolean?(obj)
+        [true, false].include? obj
+      end
+
       def merge_defaults_obj(config, defaults)
         if defaults.nil?
           config
@@ -37,7 +35,7 @@ module Frise
           end
           new_config
 
-        elsif defaults.class != config.class && !(defaults.boolean? && config.boolean?)
+        elsif defaults.class != config.class && !(boolean?(defaults) && boolean?(config))
           raise "Cannot merge config #{config} (#{config.class}) with defaults #{defaults} (#{defaults.class})"
 
         else

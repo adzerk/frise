@@ -3,10 +3,6 @@
 require 'frise/parser'
 require 'set'
 
-module Boolean; end
-class TrueClass; include Boolean; end
-class FalseClass; include Boolean; end
-
 module Frise
   module Validator
     class << self
@@ -17,6 +13,13 @@ module Frise
         when String then obj.start_with?('$') ? obj[1..-1].to_sym : obj
         else obj
         end
+      end
+
+      def get_expected_types(type_key)
+        allowed_types = %w[Hash Array String Integer Float Object]
+        return [Object.const_get(type_key)] if allowed_types.include?(type_key)
+        return [TrueClass, FalseClass] if type_key == 'Boolean'
+        raise "Invalid expected type in schema: #{type_key}"
       end
 
       def validation_error(path, msg)
@@ -43,9 +46,10 @@ module Frise
           return
         end
 
-        expected_type = Object.const_get(full_schema.fetch(:type, 'Hash'))
-        unless obj.is_a?(expected_type)
-          errors << validation_error(path, "Expected #{expected_type}, found #{obj.class}")
+        expected_types = get_expected_types(full_schema.fetch(:type, 'Hash'))
+        unless expected_types.any? { |typ| obj.is_a?(typ) }
+          expected_str = expected_types.size == 1 ? expected_types[0] : "one of " + expected_types.join(", ")
+          errors << validation_error(path, "Expected #{expected_str}, found #{obj.class}")
           return
         end
 
@@ -66,7 +70,7 @@ module Frise
           end
         end
 
-        return unless expected_type.ancestors.member?(Enumerable)
+        return unless expected_types.size == 1 && expected_types[0].ancestors.member?(Enumerable)
         hash = obj.is_a?(Hash) ? obj : Hash[obj.map.with_index { |x, i| [i, x] }]
         hash.each do |key, value|
           if full_schema[:all_keys] && !key.is_a?(Symbol)
