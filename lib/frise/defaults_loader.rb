@@ -1,6 +1,10 @@
 require 'frise/parser'
 
 module Frise
+  # Provides the logic for merging config defaults into pre-loaded configuration objects.
+  #
+  # The merge_defaults and merge_defaults_at entrypoint methods provide ways to read files with
+  # defaults and apply them to configuration objects.
   module DefaultsLoader
     class << self
       def boolean?(obj)
@@ -44,7 +48,8 @@ module Frise
 
       def merge_defaults_obj_at(config, at_path, defaults)
         return merge_defaults_obj(config, defaults) if at_path.empty?
-        key, rest_path = at_path[0], at_path.drop(1)
+        key = at_path[0]
+        rest_path = at_path.drop(1)
         config.merge(key => merge_defaults_obj_at(config[key], rest_path, defaults))
       end
 

@@ -3,13 +3,16 @@ require 'frise/parser'
 require 'frise/validator'
 
 module Frise
+  # The entrypoint for loading configs from files according to the conventions defined for Frise.
+  #
+  # The load method loads a configuration file, merges it with the applicable defaults and validates
+  # its schema. Other methods in Loader perform only parts of the process.
   class Loader
     def initialize(schema_load_paths: [], defaults_load_paths: [], pre_loaders: [], validators: nil)
       @schema_load_paths = schema_load_paths
       @defaults_load_paths = defaults_load_paths
       @pre_loaders = pre_loaders
       @validators = validators
-      @overrides = {}
     end
 
     def load(config_file, exit_on_fail = true, symbol_table = nil)
@@ -31,7 +34,9 @@ module Frise
     def merge_defaults_at(config, at_path, defaults_name, symbol_table = nil)
       @defaults_load_paths.map do |defaults_dir|
         defaults_file = File.join(defaults_dir, defaults_name)
-        config = DefaultsLoader.merge_defaults_at(config, at_path, defaults_file, symbol_table || config)
+        config = DefaultsLoader.merge_defaults_at(
+          config, at_path, defaults_file, symbol_table || config
+        )
       end
       config
     end

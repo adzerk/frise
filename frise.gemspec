@@ -1,4 +1,5 @@
 # coding: utf-8
+
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'frise/version'
@@ -9,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['ShiftForward']
   spec.email         = ['info@shiftforward.eu']
 
-  spec.summary       = 'A Ruby config library supporting schema validation, default values and templating'
+  spec.summary       = 'Ruby config library with schema validation, default values and templating'
   spec.homepage      = 'https://github.com/ShiftForward/frise'
   spec.license       = 'Apache-2.0'
 
