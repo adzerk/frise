@@ -3,12 +3,12 @@ require 'frise/parser'
 include Frise
 
 RSpec.describe Parser do
-  it 'should parse a YAML file without substitutions' do
+  it 'should parse a plain YAML file' do
     conf = Parser.parse(fixture_path('simple.yml'))
     expect(conf).to eq('str' => 'abc', 'int' => 4, 'bool' => true)
   end
 
-  it 'parse the config with Liquid if a symbol table is passed' do
+  it 'parse a file as a Liquid template if a symbol table is passed' do
     conf1 = Parser.parse(fixture_path('simple_liquid.yml'), 'var1' => 'REPLACED', 'var2' => 1)
     expect(conf1).to eq('str' => 'replaced', 'int' => 1, 'bool' => true)
 

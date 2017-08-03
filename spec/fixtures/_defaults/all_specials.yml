@@ -1,0 +1,7 @@
+obj1:
+  $all:
+    enabled: true
+obj2:
+  $optional: true
+  nest1:
+    nest2: "val"

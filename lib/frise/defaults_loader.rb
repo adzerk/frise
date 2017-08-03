@@ -39,7 +39,8 @@ module Frise
           new_config
 
         elsif defaults.class != config.class && !(boolean?(defaults) && boolean?(config))
-          raise "Cannot merge config #{config} (#{config.class}) with defaults #{defaults} (#{defaults.class})"
+          raise "Cannot merge config #{config.inspect} (#{config.class}) " \
+            "with default #{defaults.inspect} (#{defaults.class})"
 
         else
           config
@@ -47,10 +48,8 @@ module Frise
       end
 
       def merge_defaults_obj_at(config, at_path, defaults)
-        return merge_defaults_obj(config, defaults) if at_path.empty?
-        key = at_path[0]
-        rest_path = at_path.drop(1)
-        config.merge(key => merge_defaults_obj_at(config[key], rest_path, defaults))
+        at_path.reverse.each { |key| defaults = { key => defaults } }
+        merge_defaults_obj(config, defaults)
       end
 
       def merge_defaults(config, defaults_file, symbol_table = config)
