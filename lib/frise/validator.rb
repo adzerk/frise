@@ -20,36 +20,40 @@ module Frise
 
     def add_validation_error(path, msg)
       logged_path = path.empty? ? '<root>' : path[1..-1]
-      @errors << "In #{logged_path}: #{msg}"
+      @errors << "At #{logged_path}: #{msg}"
     end
 
     def get_full_schema(schema)
       case schema
       when Hash then schema
       when Symbol then { type: 'Object', validate: schema }
-      when Array then { type: 'Array', all: schema[0] }
+      when Array then
+        if schema.size == 1
+          { type: 'Array', all: schema[0] }
+        else
+          (raise "Invalid schema: #{schema.inspect}")
+        end
       when String then
         if schema.end_with?('?')
           { type: schema[0..-2], optional: true }
         else
           { type: schema }
         end
-      else raise "Invalid schema: #{schema}"
+      else raise "Invalid schema: #{schema.inspect}"
       end
     end
 
     def validate_optional(full_schema, obj, path)
       if obj.nil?
-        add_validation_error(path, 'Missing required value') unless full_schema[:optional]
+        add_validation_error(path, 'missing required value') unless full_schema[:optional]
         return false
       end
       true
     end
 
     def get_expected_types(full_schema)
-      allowed_types = %w[Hash Array String Integer Float Object]
       type_key = full_schema.fetch(:type, 'Hash')
-
+      allowed_types = %w[Hash Array String Integer Float Object]
       return [Object.const_get(type_key)] if allowed_types.include?(type_key)
       return [TrueClass, FalseClass] if type_key == 'Boolean'
       raise "Invalid expected type in schema: #{type_key}"
@@ -58,8 +62,8 @@ module Frise
     def validate_type(full_schema, obj, path)
       expected_types = get_expected_types(full_schema)
       unless expected_types.any? { |typ| obj.is_a?(typ) }
-        expected_str = expected_types.size == 1 ? expected_types[0] : 'one of ' + expected_types.join(', ')
-        add_validation_error(path, "Expected #{expected_str}, found #{obj.class}")
+        type_key = full_schema.fetch(:type, 'Hash')
+        add_validation_error(path, "expected #{type_key}, found #{obj.class}")
         return false
       end
       true
@@ -98,7 +102,7 @@ module Frise
           if full_schema[:all]
             validate_object("#{path}.#{key}", value, full_schema[:all])
           elsif !full_schema[:allow_unknown_keys]
-            add_validation_error(path, "Unknown key: #{key}")
+            add_validation_error(path, "unknown key: #{key}")
           end
         end
       end
@@ -126,9 +130,7 @@ module Frise
       end
     end
 
-    def self.validate(config, schema_file, validators = nil, exit_on_fail = true, root = config)
-      schema = parse_symbols(Parser.parse(schema_file))
-
+    def self.validate_obj(config, schema, validators = nil, exit_on_fail = true, root = config)
       validator = Validator.new(root, validators)
       validator.validate_object('', config, schema)
 
@@ -142,13 +144,17 @@ module Frise
       validator.errors
     end
 
+    def self.validate(config, schema_file, validators = nil, exit_on_fail = true, root = config)
+      schema = parse_symbols(Parser.parse(schema_file))
+      validate_obj(config, schema, validators, exit_on_fail, root)
+    end
+
     def self.validate_at(config, at_path, schema_file,
                          validators = nil, exit_on_fail = true, root = config)
 
-      return validate(config, schema_file, validators, exit_on_fail, root) if at_path.empty?
-      key = at_path[0]
-      rest_path = at_path.drop(1)
-      validate_at(config[key], rest_path, schema_file, validators, exit_on_fail, root)
+      schema = parse_symbols(Parser.parse(schema_file))
+      at_path.reverse.each { |key| schema = { key => schema, :allow_unknown_keys => true } }
+      validate_obj(config, schema, validators, exit_on_fail, root)
     end
   end
 end

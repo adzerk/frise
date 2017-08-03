@@ -1,6 +1,14 @@
+require 'tempfile'
 
 def fixture_path(filename)
   File.join(File.dirname(__FILE__), 'fixtures', filename)
+end
+
+def tmp_config_path(obj)
+  file = Tempfile.new('frise_config')
+  file.write(YAML.dump(obj))
+  file.close
+  file.path
 end
 
 RSpec.configure do |config|

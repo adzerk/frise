@@ -15,7 +15,7 @@ RSpec.describe DefaultsLoader do
       'obj' => { 'key2' => 'value02', 'key4' => 1 }
     }
     conf = DefaultsLoader.merge_defaults(conf, fixture_path('all_types.yml'))
-    expect(conf['arr']).to eq(%w[elem0 elem1 elem2])
+    expect(conf['arr']).to eq %w[elem0 elem1 elem2]
     expect(conf['obj']).to eq(
       'key1' => 'value1',
       'key2' => 'value02',
@@ -33,19 +33,19 @@ RSpec.describe DefaultsLoader do
   end
 
   it 'should interpret the $all key in a default object' do
-    conf1 = { 'obj1' => {} }
-    conf1 = DefaultsLoader.merge_defaults(conf1, fixture_path('_defaults/all_specials.yml'))
-    expect(conf1['obj1']).to eq({})
+    conf = { 'obj1' => {} }
+    conf = DefaultsLoader.merge_defaults(conf, fixture_path('_defaults/all_specials.yml'))
+    expect(conf['obj1']).to eq({})
 
-    conf2 = {
+    conf = {
       'obj1' => {
         'key1' => { 'i' => 1 },
         'key2' => { 'i' => 2 },
         'key3' => { 'i' => 3, 'enabled' => false }
       }
     }
-    conf2 = DefaultsLoader.merge_defaults(conf2, fixture_path('_defaults/all_specials.yml'))
-    expect(conf2['obj1']).to eq(
+    conf = DefaultsLoader.merge_defaults(conf, fixture_path('_defaults/all_specials.yml'))
+    expect(conf['obj1']).to eq(
       'key1' => { 'i' => 1, 'enabled' => true },
       'key2' => { 'i' => 2, 'enabled' => true },
       'key3' => { 'i' => 3, 'enabled' => false }
@@ -53,12 +53,12 @@ RSpec.describe DefaultsLoader do
   end
 
   it 'should interpret the $optional key in a default object' do
-    conf1 = DefaultsLoader.merge_defaults({}, fixture_path('_defaults/all_specials.yml'))
-    expect(conf1['obj2']).to eq(nil)
+    conf = DefaultsLoader.merge_defaults({}, fixture_path('_defaults/all_specials.yml'))
+    expect(conf['obj2']).to eq nil
 
-    conf2 = { 'obj2' => {} }
-    conf2 = DefaultsLoader.merge_defaults(conf2, fixture_path('_defaults/all_specials.yml'))
-    expect(conf2['obj2']).to eq('nest1' => { 'nest2' => 'val' })
+    conf = { 'obj2' => {} }
+    conf = DefaultsLoader.merge_defaults(conf, fixture_path('_defaults/all_specials.yml'))
+    expect(conf['obj2']).to eq('nest1' => { 'nest2' => 'val' })
   end
 
   it 'should merge correctly a file at a given path' do
@@ -76,6 +76,6 @@ RSpec.describe DefaultsLoader do
   it 'should raise an error when trying to merge defaults with different values' do
     conf = { 'int' => 'not_an_int' }
     expect { DefaultsLoader.merge_defaults(conf, fixture_path('simple.yml')) }
-      .to raise_error('Cannot merge config "not_an_int" (String) with default 4 (Integer)')
+      .to raise_error 'Cannot merge config "not_an_int" (String) with default 4 (Integer)'
   end
 end
