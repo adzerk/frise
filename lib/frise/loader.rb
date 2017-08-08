@@ -15,7 +15,7 @@ module Frise
       @validators = validators
     end
 
-    def load(config_file, exit_on_fail = true, symbol_table = nil)
+    def load(config_file, exit_on_fail = true, symbol_table = {})
       config = Parser.parse(config_file, symbol_table)
       config_name = File.basename(config_file)
 
@@ -23,19 +23,19 @@ module Frise
         config = pre_loader.call(config)
       end
 
-      config = merge_defaults(config, config_name)
+      config = merge_defaults(config, config_name, symbol_table)
       validate(config, config_name, exit_on_fail)
     end
 
-    def merge_defaults(config, defaults_name, symbol_table = nil)
+    def merge_defaults(config, defaults_name, symbol_table = {})
       merge_defaults_at(config, [], defaults_name, symbol_table)
     end
 
-    def merge_defaults_at(config, at_path, defaults_name, symbol_table = nil)
+    def merge_defaults_at(config, at_path, defaults_name, symbol_table = {})
       @defaults_load_paths.map do |defaults_dir|
         defaults_file = File.join(defaults_dir, defaults_name)
         config = DefaultsLoader.merge_defaults_at(
-          config, at_path, defaults_file, symbol_table || config
+          config, at_path, defaults_file, symbol_table.merge(config)
         )
       end
       config
@@ -48,8 +48,11 @@ module Frise
     def validate_at(config, at_path, schema_name, exit_on_fail = true)
       @schema_load_paths.map do |schema_dir|
         schema_file = File.join(schema_dir, schema_name)
-        Validator.validate_at(config, at_path, schema_file,
-                              validators: @validators, fatal: exit_on_fail)
+        errors = Validator.validate_at(config, at_path, schema_file,
+                                       validators: @validators,
+                                       print: exit_on_fail,
+                                       fatal: exit_on_fail)
+        return nil if errors.any?
       end
       config
     end

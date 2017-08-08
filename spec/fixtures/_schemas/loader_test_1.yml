@@ -1,0 +1,9 @@
+str: String
+int: Integer
+bool: Boolean
+arr: [String]
+obj:
+  $all: String
+record:
+  field1: $short_string
+  field2: Boolean
