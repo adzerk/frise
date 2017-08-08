@@ -130,31 +130,43 @@ module Frise
       end
     end
 
-    def self.validate_obj(config, schema, validators = nil, exit_on_fail = true, root = config)
-      validator = Validator.new(root, validators)
+    def self.validate_obj(config, schema, options = {})
+      validator = Validator.new(config, options[:validators])
       validator.validate_object('', config, schema)
 
-      unless validator.errors.empty?
-        puts "#{validator.errors.length} config error(s) found:"
-        validator.errors.each do |error|
-          puts " - #{error}"
+      if validator.errors.any?
+        if options[:print]
+          puts "#{validator.errors.length} config error(s) found:"
+          validator.errors.each do |error|
+            puts " - #{error}"
+          end
         end
-        exit 1 if exit_on_fail
+
+        exit 1 if options[:fatal]
+        raise ValidationError.new(validator.errors), 'Invalid configuration' if options[:raise_error]
       end
       validator.errors
     end
 
-    def self.validate(config, schema_file, validators = nil, exit_on_fail = true, root = config)
+    def self.validate(config, schema_file, options = {})
       schema = parse_symbols(Parser.parse(schema_file))
-      validate_obj(config, schema, validators, exit_on_fail, root)
+      validate_obj(config, schema, options)
     end
 
-    def self.validate_at(config, at_path, schema_file,
-                         validators = nil, exit_on_fail = true, root = config)
-
+    def self.validate_at(config, at_path, schema_file, options = {})
       schema = parse_symbols(Parser.parse(schema_file))
       at_path.reverse.each { |key| schema = { key => schema, :allow_unknown_keys => true } }
-      validate_obj(config, schema, validators, exit_on_fail, root)
+      validate_obj(config, schema, options)
+    end
+  end
+
+  # An error resulting of the validation of a config. The list of errors can be inspected using the
+  # errors method.
+  class ValidationError < StandardError
+    attr_reader :errors
+
+    def initialize(errors)
+      @errors = errors
     end
   end
 end

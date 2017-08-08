@@ -48,7 +48,8 @@ module Frise
     def validate_at(config, at_path, schema_name, exit_on_fail = true)
       @schema_load_paths.map do |schema_dir|
         schema_file = File.join(schema_dir, schema_name)
-        Validator.validate_at(config, at_path, schema_file, @validators, exit_on_fail)
+        Validator.validate_at(config, at_path, schema_file,
+                              validators: @validators, fatal: exit_on_fail)
       end
       config
     end
