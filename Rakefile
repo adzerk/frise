@@ -10,4 +10,4 @@ end
 load_if_available('rspec/core/rake_task') { RSpec::Core::RakeTask.new(:spec) }
 load_if_available('rubocop/rake_task') { RuboCop::RakeTask.new(:rubocop) }
 
-task default: :spec
+task default: %i[rubocop spec]
