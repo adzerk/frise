@@ -50,6 +50,23 @@ RSpec.describe Loader do
     )
   end
 
+  it 'should allow providing actions to be run just before loading defaults and schemas' do
+    on_load = ->(conf) { conf.map { |k, v| ["prefix_#{k}", v] }.to_h }
+
+    loader = Loader.new(
+      pre_loaders: [on_load]
+    )
+
+    conf = loader.load(fixture_path('loader_test_1.yml'), false)
+    expect(conf).to eq(
+      'prefix_str' => 'str',
+      'prefix_bool' => true,
+      'prefix_arr' => %w[elem0 elem1],
+      'prefix_obj' => { 'key2' => 'value2' },
+      'prefix_record' => { 'field1' => 'f1', 'field2' => true }
+    )
+  end
+
   it 'should print validation errors and terminate if exit_on_fail is true' do
     validators = Object.new
     def validators.short_string(_, str)

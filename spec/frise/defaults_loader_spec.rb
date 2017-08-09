@@ -32,17 +32,23 @@ RSpec.describe DefaultsLoader do
     expect(conf).to eq('a' => 45, 'str' => 'bcd', 'int' => 1, 'bool' => true)
   end
 
-  it 'should interpret the $all key in a default object' do
-    conf = { 'obj1' => {} }
+  it 'should interpret the $all key in a default hash or array' do
+    conf = { 'obj1' => {}, 'arr' => [] }
     conf = DefaultsLoader.merge_defaults(conf, fixture_path('_defaults/all_specials.yml'))
     expect(conf['obj1']).to eq({})
+    expect(conf['arr']).to eq([])
 
     conf = {
       'obj1' => {
         'key1' => { 'i' => 1 },
         'key2' => { 'i' => 2 },
         'key3' => { 'i' => 3, 'enabled' => false }
-      }
+      },
+      'arr' => [
+        { 'j' => 1 },
+        { 'j' => 2 },
+        { 'j' => 3, 'active' => false }
+      ]
     }
     conf = DefaultsLoader.merge_defaults(conf, fixture_path('_defaults/all_specials.yml'))
     expect(conf['obj1']).to eq(
@@ -50,9 +56,16 @@ RSpec.describe DefaultsLoader do
       'key2' => { 'i' => 2, 'enabled' => true },
       'key3' => { 'i' => 3, 'enabled' => false }
     )
+    expect(conf['arr']).to eq(
+      [
+        { 'j' => 1, 'active' => true },
+        { 'j' => 2, 'active' => true },
+        { 'j' => 3, 'active' => false }
+      ]
+    )
   end
 
-  it 'should interpret the $optional key in a default object' do
+  it 'should interpret the $optional key in a default hash' do
     conf = DefaultsLoader.merge_defaults({}, fixture_path('_defaults/all_specials.yml'))
     expect(conf['obj2']).to eq nil
 

@@ -5,3 +5,6 @@ obj2:
   $optional: true
   nest1:
     nest2: "val"
+arr:
+  $all:
+    active: true

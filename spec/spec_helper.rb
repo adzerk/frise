@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 require 'tempfile'
 
 def fixture_path(filename)
