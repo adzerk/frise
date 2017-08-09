@@ -1,0 +1,10 @@
+movies:
+  - title: String
+    year: Integer
+    director: String
+    categories: [String]
+    rating: Float?
+ui:
+  default_movie: String
+  filter_from: Integer
+  filter_to: Integer

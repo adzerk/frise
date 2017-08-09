@@ -1,0 +1,10 @@
+movies:
+  - title: The Shawshank Redemption
+    year: 1994
+    categories: [Crime, Drama]
+    rating: 9.3
+  - title: The Godfather
+    year: 1972
+    director: Francis Ford Coppola
+    categories: [Crime, Drama]
+    rating: 9.2
