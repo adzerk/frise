@@ -1,0 +1,3 @@
+str: "{{ var1 | downcase }}"
+int: {{ var2 }}
+bool: {% if var2 < 5 %}true{% else %}false{% endif %}

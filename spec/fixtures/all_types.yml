@@ -1,0 +1,14 @@
+str: "test a"
+int: 3
+bool: true
+bool2: false
+arr: ["elem0", "elem1"]
+obj:
+  key1: "value1"
+  key2: "value2"
+  key3:
+    nested1: "nvalue1"
+record:
+  field1: "f1"
+  field2: 3
+  field3: true
