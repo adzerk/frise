@@ -1,0 +1,9 @@
+str: "def_str"
+int: -1
+bool: false
+arr: ["def_elem"]
+obj:
+  key1: "def_value1"
+  key3: "def_value3"
+record:
+  field1: "def_f1"
