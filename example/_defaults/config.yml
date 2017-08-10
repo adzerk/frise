@@ -1,0 +1,7 @@
+movies:
+  $all:
+    director: N/A
+ui:
+  default_movie: {{ movies.first.title }}
+  filter_from: {{ movies | sort: 'year' | first | map: 'year' }}
+  filter_to: {{ movies | sort: 'year' | reverse | first | map: 'year' }}
