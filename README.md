@@ -1,4 +1,6 @@
 # Frise
+[![Build Status](https://travis-ci.org/ShiftForward/frise.svg?branch=master)](https://travis-ci.org/ShiftForward/frise)
+[![Coverage Status](https://coveralls.io/repos/github/ShiftForward/frise/badge.svg?branch=master)](https://coveralls.io/github/ShiftForward/frise?branch=master)
 
 Frise is a library for loading configuration files as native Ruby structures. Besides reading and
 parsing the files themselves, it also:
