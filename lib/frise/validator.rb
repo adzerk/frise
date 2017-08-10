@@ -18,6 +18,13 @@ module Frise
       @errors = []
     end
 
+    def widened_class(obj)
+      class_name = obj.class.to_s
+      return 'Boolean' if %w[TrueClass FalseClass].include? class_name
+      return 'Integer' if %w[Fixnum Bignum].include? class_name
+      class_name
+    end
+
     def add_validation_error(path, msg)
       logged_path = path.empty? ? '<root>' : path[1..-1]
       @errors << "At #{logged_path}: #{msg}"
@@ -63,7 +70,7 @@ module Frise
       expected_types = get_expected_types(full_schema)
       unless expected_types.any? { |typ| obj.is_a?(typ) }
         type_key = full_schema.fetch(:type, 'Hash')
-        add_validation_error(path, "expected #{type_key}, found #{obj.class}")
+        add_validation_error(path, "expected #{type_key}, found #{widened_class(obj)}")
         return false
       end
       true

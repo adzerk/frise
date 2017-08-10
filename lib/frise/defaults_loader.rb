@@ -7,8 +7,11 @@ module Frise
   # defaults and apply them to configuration objects.
   module DefaultsLoader
     class << self
-      def boolean?(obj)
-        [true, false].include? obj
+      def widened_class(obj)
+        class_name = obj.class.to_s
+        return 'Boolean' if %w[TrueClass FalseClass].include? class_name
+        return 'Integer' if %w[Fixnum Bignum].include? class_name
+        class_name
       end
 
       def merge_defaults_obj(config, defaults)
@@ -38,9 +41,9 @@ module Frise
           end
           new_config
 
-        elsif defaults.class != config.class && !(boolean?(defaults) && boolean?(config))
-          raise "Cannot merge config #{config.inspect} (#{config.class}) " \
-            "with default #{defaults.inspect} (#{defaults.class})"
+        elsif widened_class(defaults) != widened_class(config)
+          raise "Cannot merge config #{config.inspect} (#{widened_class(config)}) " \
+            "with default #{defaults.inspect} (#{widened_class(defaults)})"
 
         else
           config

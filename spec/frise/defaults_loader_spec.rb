@@ -90,5 +90,9 @@ RSpec.describe DefaultsLoader do
     conf = { 'int' => 'not_an_int' }
     expect { DefaultsLoader.merge_defaults(conf, fixture_path('simple.yml')) }
       .to raise_error 'Cannot merge config "not_an_int" (String) with default 4 (Integer)'
+
+    conf = { 'int' => true }
+    expect { DefaultsLoader.merge_defaults(conf, fixture_path('simple.yml')) }
+      .to raise_error 'Cannot merge config true (Boolean) with default 4 (Integer)'
   end
 end
