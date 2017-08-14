@@ -56,12 +56,12 @@ module Frise
       end
 
       def merge_defaults(config, defaults_file, symbol_table = config)
-        defaults = Parser.parse(defaults_file, symbol_table)
+        defaults = Parser.parse(defaults_file, symbol_table) || {}
         merge_defaults_obj(config, defaults)
       end
 
       def merge_defaults_at(config, at_path, defaults_file, symbol_table = config)
-        defaults = Parser.parse(defaults_file, symbol_table)
+        defaults = Parser.parse(defaults_file, symbol_table) || {}
         merge_defaults_obj_at(config, at_path, defaults)
       end
     end

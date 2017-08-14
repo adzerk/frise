@@ -16,7 +16,7 @@ module Frise
     end
 
     def load(config_file, exit_on_fail = true, symbol_table = {})
-      config = Parser.parse(config_file, symbol_table)
+      config = Parser.parse(config_file, symbol_table) || {}
       config_name = File.basename(config_file)
 
       @pre_loaders.each do |pre_loader|
