@@ -170,6 +170,44 @@ RSpec.describe Validator do
     expect(errors).to eq ['At obj: expected a short key, found "objkey0"']
   end
 
+  it 'should validate correctly enumerations' do
+    schema = { 'color' => { '$enum' => %w[red green blue] } }
+
+    conf = { 'color' => 'green' }
+    errors = validate(conf, schema)
+    expect(errors).to eq []
+
+    conf = { 'color' => 'car' }
+    errors = validate(conf, schema)
+    expect(errors).to eq [
+      'At color: invalid value "car". Accepted values are "red", "green", "blue"'
+    ]
+  end
+
+  it 'should validate correctly $one_of choices of schemas' do
+    schema = {
+      'key' => {
+        '$one_of' => ['String', { 'c' => 'Integer' }]
+      }
+    }
+
+    conf = { 'key' => 'abc' }
+    errors = validate(conf, schema)
+    expect(errors).to eq []
+
+    conf = { 'key' => { 'c' => 4 } }
+    errors = validate(conf, schema)
+    expect(errors).to eq []
+
+    conf = { 'key' => 42 }
+    errors = validate(conf, schema)
+    expect(errors).to eq ['At key: 42 does not match any of the possible schemas']
+
+    conf = { 'key' => { 'c' => 'abc' } }
+    errors = validate(conf, schema)
+    expect(errors).to eq ['At key: {"c"=>"abc"} does not match any of the possible schemas']
+  end
+
   it 'should be able to use complex schemas in their full form' do
     validators = Object.new
     def validators.short_string(_, str)
@@ -180,7 +218,9 @@ RSpec.describe Validator do
       'opt_int_map' => { '$all_keys' => '$short_string', '$all' => 'Integer', '$optional' => true },
       'opt_sstr' => { '$type' => 'String', '$validate' => '$short_string', '$optional' => true },
       'opt_sstr_arr' => { '$type' => 'Array', '$all' => '$short_string', '$optional' => true },
-      'sstr_arr' => ['$short_string']
+      'sstr_arr' => ['$short_string'],
+      'opt_enum' => { '$enum' => %w[a b c], '$optional' => true },
+      'opt_one_of' => { '$one_of' => %w[String Integer], '$optional' => true }
     }
 
     conf = { 'sstr_arr' => ['val'] }
@@ -191,7 +231,9 @@ RSpec.describe Validator do
       'opt_int_map' => { 'k0' => 1, 'k1' => 'a', 'mapkey1' => 2 },
       'opt_sstr' => 'abcde',
       'opt_sstr_arr' => ['v1', 'v1234', true],
-      'sstr_arr' => %w[value val]
+      'sstr_arr' => %w[value val],
+      'opt_enum' => 'd',
+      'opt_one_of' => 4.5
     }
     errors = validate(conf, schema, validators: validators)
     expect(errors).to eq [
@@ -200,7 +242,9 @@ RSpec.describe Validator do
       'At opt_sstr: expected a short string, found "abcde"',
       'At opt_sstr_arr.1: expected a short string, found "v1234"',
       'At opt_sstr_arr.2: expected a short string, found true',
-      'At sstr_arr.0: expected a short string, found "value"'
+      'At sstr_arr.0: expected a short string, found "value"',
+      'At opt_enum: invalid value "d". Accepted values are "a", "b", "c"',
+      'At opt_one_of: 4.5 does not match any of the possible schemas'
     ]
   end
 
