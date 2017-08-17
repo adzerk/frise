@@ -1,3 +1,3 @@
 module Frise
-  VERSION = '0.2.0.pre'.freeze
+  VERSION = '0.2.0'.freeze
 end
