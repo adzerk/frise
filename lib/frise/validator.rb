@@ -32,7 +32,9 @@ module Frise
 
     def get_full_schema(schema)
       case schema
-      when Hash then schema
+      when Hash then
+        default_type = schema[:enum] || schema[:one_of] ? 'Object' : 'Hash'
+        { type: default_type }.merge(schema)
       when Symbol then { type: 'Object', validate: schema }
       when Array then
         if schema.size == 1
@@ -87,6 +89,28 @@ module Frise
       true
     end
 
+    def validate_enum(full_schema, obj, path)
+      if full_schema[:enum] && !full_schema[:enum].include?(obj)
+        add_validation_error(path, "invalid value #{obj.inspect}. " \
+          "Accepted values are #{full_schema[:enum].map(&:inspect).join(', ')}")
+        return false
+      end
+      true
+    end
+
+    def validate_one_of(full_schema, obj, path)
+      if full_schema[:one_of]
+        full_schema[:one_of].each do |schema_opt|
+          opt_validator = Validator.new(@root, @validators)
+          opt_validator.validate_object(path, obj, schema_opt)
+          return true if opt_validator.errors.empty?
+        end
+        add_validation_error(path, "#{obj.inspect} does not match any of the possible schemas")
+        return false
+      end
+      true
+    end
+
     def validate_spec_keys(full_schema, obj, path, processed_keys)
       full_schema.each do |spec_key, spec_value|
         next if spec_key.is_a?(Symbol)
@@ -122,6 +146,8 @@ module Frise
       return unless validate_optional(full_schema, obj, path)
       return unless validate_type(full_schema, obj, path)
       return unless validate_custom(full_schema, obj, path)
+      return unless validate_enum(full_schema, obj, path)
+      return unless validate_one_of(full_schema, obj, path)
 
       processed_keys = Set.new
       return unless validate_spec_keys(full_schema, obj, path, processed_keys)
