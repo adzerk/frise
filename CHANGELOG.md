@@ -1,4 +1,4 @@
-### 0.2.0 (unreleased)
+### 0.2.0 (August 17, 2017)
 
 - New features
   - New schema types `$enum` and `$one_of` for specifying enumerations and values with multiple
