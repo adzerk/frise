@@ -182,12 +182,12 @@ module Frise
     end
 
     def self.validate(config, schema_file, options = {})
-      schema = parse_symbols(Parser.parse(schema_file))
+      schema = parse_symbols(Parser.parse(schema_file) || { allow_unknown_keys: true })
       validate_obj(config, schema, options)
     end
 
     def self.validate_at(config, at_path, schema_file, options = {})
-      schema = parse_symbols(Parser.parse(schema_file))
+      schema = parse_symbols(Parser.parse(schema_file) || { allow_unknown_keys: true })
       at_path.reverse.each { |key| schema = { key => schema, :allow_unknown_keys => true } }
       validate_obj(config, schema, options)
     end
