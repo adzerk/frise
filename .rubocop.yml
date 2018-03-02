@@ -1,2 +1,6 @@
 Metrics:
   Enabled: false
+Naming/UncommunicativeBlockParamName:
+  Enabled: false
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
