@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'frise/parser'
 
 include Frise
