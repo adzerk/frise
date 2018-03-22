@@ -1,0 +1,4 @@
+$include: ["{{ _file_dir }}/loader_test3_base.yml"]
+
+id: "myobj"
+description: "Description of {{ name }}"

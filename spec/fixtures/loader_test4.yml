@@ -1,0 +1,8 @@
+key1:
+  value1_1: 1
+  $schema: ["{{ _file_dir }}/_schemas/loader_test4_key1.yml"]
+  $include: ["{{ _file_dir }}/_defaults/loader_test4_key1.yml"]
+  key2:
+    value2_1: 2
+    $schema: ["{{ _file_dir }}/_schemas/loader_test4_key2.yml"]
+    $include: ["{{ _file_dir }}/_defaults/loader_test4_key2.yml"]

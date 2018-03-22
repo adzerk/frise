@@ -1,0 +1,4 @@
+$schema: ["{{ _file_dir }}/_schemas/loader_test2.yml"]
+$include: ["{{ _file_dir }}/_defaults/loader_test2.yml"]
+
+name: "My Object"

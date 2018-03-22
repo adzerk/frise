@@ -1,0 +1,10 @@
+rootkey: true
+
+obj1:
+  key1: 42
+  key2: "abc"
+
+obj2:
+  $include:
+    - file: "{{ _file_dir }}/_defaults/loader_test6.yml"
+      vars: { _myvar1: "obj1.key1", _myvar2: "rootkey" }

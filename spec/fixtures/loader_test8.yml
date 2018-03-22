@@ -1,0 +1,5 @@
+$include: ["{{ _file_dir }}/_defaults/loader_test8_root.yml"]
+
+str1: "abc"
+obj:
+  $include: ["{{ _file_dir }}/_defaults/loader_test8_child.yml"]
