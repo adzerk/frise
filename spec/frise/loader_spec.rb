@@ -57,11 +57,6 @@ RSpec.describe Loader do
   end
 
   it 'should print validation errors and terminate if exit_on_fail is true' do
-    validators = Object.new
-    def validators.short_string(_, str)
-      str.is_a?(String) && str.length < 5 || (raise "expected a short string, found #{str.inspect}")
-    end
-
     loader = Loader.new(validators: validators, exit_on_fail: true)
 
     expect { loader.load(fixture_path('loader_test1_schema.yml')) }.to output(
@@ -73,11 +68,11 @@ RSpec.describe Loader do
   it 'should use an extra symbol table when provided' do
     loader = Loader.new(exit_on_fail: false)
 
-    conf = loader.load(fixture_path('loader_test2_all.yml'), '_id' => 'myobj')
+    conf = loader.load(fixture_path('loader_test2_all.yml'), '_id' => 'myobj', '_extra' => { 'a' => 42 })
     expect(conf).to eq(
       'id' => 'myobj',
       'name' => 'My Object',
-      'description' => 'Description of My Object'
+      'description' => 'Description of My Object (42)'
     )
   end
 

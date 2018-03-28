@@ -8,8 +8,7 @@ require 'frise/validator'
 module Frise
   # The entrypoint for loading configs from files according to the conventions defined for Frise.
   #
-  # The load method loads a configuration file, merges it with the applicable defaults and validates
-  # its schema. Other methods in Loader perform only parts of the process.
+  # The load method loads a configuration file, merges the applicable includes and validates its schema.
   class Loader
     def initialize(include_sym: '$include', schema_sym: '$schema', pre_loaders: [], validators: nil, exit_on_fail: true)
       @include_sym = include_sym
