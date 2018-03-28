@@ -1,0 +1,8 @@
+{% if _with_defaults %}
+$include: ["{{ _file_dir }}/_defaults/loader_test2.yml"]
+{% endif %}
+{% if _with_schema %}
+$schema: ["{{ _file_dir }}/_schemas/loader_test2.yml"]
+{% endif %}
+
+name: "My Object"

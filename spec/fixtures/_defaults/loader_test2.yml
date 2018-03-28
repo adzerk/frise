@@ -1,0 +1,9 @@
+{% if _id %}
+id: "{{ _id }}"
+{% endif %}
+
+{% if _extra %}
+description: "Description of {{ name }} ({{ _extra.a }})"
+{% else %}
+description: "Description of {{ name }}"
+{% endif %}

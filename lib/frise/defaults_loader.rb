@@ -9,6 +9,8 @@ module Frise
   # defaults and apply them to configuration objects.
   module DefaultsLoader
     class << self
+      SYMBOLS = %w[$all $optional].freeze
+
       def widened_class(obj)
         class_name = obj.class.to_s
         return 'Boolean' if %w[TrueClass FalseClass].include? class_name
@@ -35,7 +37,7 @@ module Frise
         elsif defaults.class == Hash && config.class == Hash
           new_config = {}
           (config.keys + defaults.keys).uniq.each do |key|
-            next if key.start_with?('$')
+            next if SYMBOLS.include?(key)
             new_config[key] = config[key]
             new_config[key] = merge_defaults_obj(new_config[key], defaults[key]) if defaults.key?(key)
             new_config[key] = merge_defaults_obj(new_config[key], defaults['$all']) unless new_config[key].nil?

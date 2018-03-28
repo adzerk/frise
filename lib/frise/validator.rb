@@ -165,32 +165,36 @@ module Frise
     end
 
     def self.validate_obj(config, schema, options = {})
-      validator = Validator.new(config, options[:validators])
-      validator.validate_object('', config, schema)
+      validate_obj_at(config, [], schema, options)
+    end
+
+    def self.validate_obj_at(config, at_path, schema, path_prefix: nil, validators: nil, print: nil, fatal: nil, raise_error: nil)
+      schema = parse_symbols(schema)
+      at_path.reverse.each { |key| schema = { key => schema, :allow_unknown_keys => true } }
+
+      validator = Validator.new(config, validators)
+      validator.validate_object((path_prefix || []).join('.'), config, schema)
 
       if validator.errors.any?
-        if options[:print]
+        if print
           puts "#{validator.errors.length} config error(s) found:"
           validator.errors.each do |error|
             puts " - #{error}"
           end
         end
 
-        exit 1 if options[:fatal]
-        raise ValidationError.new(validator.errors), 'Invalid configuration' if options[:raise_error]
+        exit 1 if fatal
+        raise ValidationError.new(validator.errors), 'Invalid configuration' if raise_error
       end
       validator.errors
     end
 
     def self.validate(config, schema_file, options = {})
-      schema = parse_symbols(Parser.parse(schema_file) || { allow_unknown_keys: true })
-      validate_obj(config, schema, options)
+      validate_obj_at(config, [], Parser.parse(schema_file) || { allow_unknown_keys: true }, options)
     end
 
     def self.validate_at(config, at_path, schema_file, options = {})
-      schema = parse_symbols(Parser.parse(schema_file) || { allow_unknown_keys: true })
-      at_path.reverse.each { |key| schema = { key => schema, :allow_unknown_keys => true } }
-      validate_obj(config, schema, options)
+      validate_obj_at(config, at_path, Parser.parse(schema_file) || { allow_unknown_keys: true }, options)
     end
   end
 
