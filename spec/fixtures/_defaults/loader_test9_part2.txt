@@ -1,0 +1,4 @@
+Em perigos e {{ _myconst1 }} esforçados,
+Mais do que prometia a força humana,
+E entre gente remota edificaram
+{{ _myvar1 }}, que tanto sublimaram

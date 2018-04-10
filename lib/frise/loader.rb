@@ -10,8 +10,15 @@ module Frise
   #
   # The load method loads a configuration file, merges the applicable includes and validates its schema.
   class Loader
-    def initialize(include_sym: '$include', schema_sym: '$schema', pre_loaders: [], validators: nil, exit_on_fail: true)
+    def initialize(include_sym: '$include',
+                   content_include_sym: '$content_include',
+                   schema_sym: '$schema',
+                   pre_loaders: [],
+                   validators: nil,
+                   exit_on_fail: true)
+
       @include_sym = include_sym
+      @content_include_sym = content_include_sym
       @schema_sym = schema_sym
       @pre_loaders = pre_loaders
       @validators = validators
@@ -36,18 +43,40 @@ module Frise
     def process_includes(config, at_path, root_config, global_vars)
       return config unless config.class == Hash
 
-      config, defaults_confs = extract_include(config)
-      if defaults_confs.empty?
+      # process $content_include directives
+      config, content_include_confs = extract_content_include(config)
+      unless content_include_confs.empty?
+        raise "A #{@content_include_sym} must not have any sibling key" unless config.empty?
+
+        content = ''
+        content_include_confs.each do |include_conf|
+          extra_vars = (include_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
+          extra_consts = include_conf['constants'] || {}
+          symbol_table = merge_at(root_config, at_path, config).merge(global_vars).merge(extra_vars).merge(extra_consts)
+          content += Parser.parse_as_text(include_conf['file'], symbol_table)
+        end
+        return content
+      end
+
+      # process $include directives
+      config, include_confs = extract_include(config)
+      if include_confs.empty?
         config.map { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }.to_h
       else
         Lazy.new do
-          defaults_confs.each do |defaults_conf|
-            extra_vars = (defaults_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
-            extra_consts = defaults_conf['constants'] || {}
+          include_confs.each do |include_conf|
+            extra_vars = (include_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
+            extra_consts = include_conf['constants'] || {}
             symbol_table = merge_at(root_config, at_path, config)
                            .merge(global_vars).merge(extra_vars).merge(extra_consts).merge('_this' => config)
 
-            config = DefaultsLoader.merge_defaults_obj(config, Parser.parse(defaults_conf['file'], symbol_table))
+            if include_conf['mode'] == 'content'
+              config = '' if config.class == Hash && config.empty?
+              raise "An include with 'mode: content' must not have any sibling key" unless config.class == String
+              config += Parser.parse_as_text(include_conf['file'], symbol_table)
+            else
+              config = DefaultsLoader.merge_defaults_obj(config, Parser.parse(include_conf['file'], symbol_table))
+            end
           end
           process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars)
         end
@@ -103,11 +132,19 @@ module Frise
     end
 
     def extract_include(config)
-      extract_special(config, @include_sym) do |value|
+      extract_include_base(config, @include_sym)
+    end
+
+    def extract_content_include(config)
+      extract_include_base(config, @content_include_sym)
+    end
+
+    def extract_include_base(config, sym)
+      extract_special(config, sym) do |value|
         case value
         when Hash then value
         when String then { 'file' => value }
-        else raise "Illegal value for a #{@include_sym} element: #{value.inspect}"
+        else raise "Illegal value for a #{sym} element: #{value.inspect}"
         end
       end
     end
