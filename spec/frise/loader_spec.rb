@@ -204,6 +204,14 @@ RSpec.describe Loader do
                       )
   end
 
+  it 'should disallow config objects with $content_include and other keys' do
+    loader = Loader.new(exit_on_fail: false)
+
+    expect { loader.load(fixture_path('loader_test10.yml')) }.to raise_error(
+      'A $content_include must not have any sibling key'
+    )
+  end
+
   it 'should raise an error when an include or schema value is invalid' do
     loader = Loader.new(exit_on_fail: false)
     expect { loader.load(fixture_path('loader_test7_obj_include.yml')) }.to raise_error(

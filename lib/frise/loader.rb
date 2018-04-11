@@ -70,13 +70,7 @@ module Frise
             symbol_table = merge_at(root_config, at_path, config)
                            .merge(global_vars).merge(extra_vars).merge(extra_consts).merge('_this' => config)
 
-            if include_conf['mode'] == 'content'
-              config = '' if config.class == Hash && config.empty?
-              raise "An include with 'mode: content' must not have any sibling key" unless config.class == String
-              config += Parser.parse_as_text(include_conf['file'], symbol_table)
-            else
-              config = DefaultsLoader.merge_defaults_obj(config, Parser.parse(include_conf['file'], symbol_table))
-            end
+            config = DefaultsLoader.merge_defaults_obj(config, Parser.parse(include_conf['file'], symbol_table))
           end
           process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars)
         end
