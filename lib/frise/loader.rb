@@ -53,7 +53,7 @@ module Frise
           extra_vars = (include_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
           extra_consts = include_conf['constants'] || {}
           symbol_table = merge_at(root_config, at_path, config).merge(global_vars).merge(extra_vars).merge(extra_consts)
-          content += Parser.parse_as_text(include_conf['file'], symbol_table)
+          content += Parser.parse_as_text(include_conf['file'], symbol_table) || ''
         end
         return content
       end
