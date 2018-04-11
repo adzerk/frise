@@ -208,23 +208,23 @@ RSpec.describe Loader do
     loader = Loader.new(exit_on_fail: false)
 
     expect { loader.load(fixture_path('loader_test10.yml')) }.to raise_error(
-      'A $content_include must not have any sibling key'
+      'At str2: a $content_include must not have any sibling key'
     )
   end
 
   it 'should raise an error when an include or schema value is invalid' do
     loader = Loader.new(exit_on_fail: false)
     expect { loader.load(fixture_path('loader_test7_obj_include.yml')) }.to raise_error(
-      'Illegal value for $include: {}'
+      'At <root>: illegal value for $include: {}'
     )
     expect { loader.load(fixture_path('loader_test7_num_arr_include.yml')) }.to raise_error(
-      'Illegal value for a $include element: 0'
+      'At <root>: illegal value for a $include element: 0'
     )
     expect { loader.load(fixture_path('loader_test7_num_schema.yml')) }.to raise_error(
-      'Illegal value for $schema: 0'
+      'At <root>: illegal value for $schema: 0'
     )
     expect { loader.load(fixture_path('loader_test7_obj_arr_schema.yml')) }.to raise_error(
-      'Illegal value for a $schema element: {}'
+      'At <root>: illegal value for a $schema element: {}'
     )
   end
 
