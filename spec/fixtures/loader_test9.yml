@@ -1,0 +1,7 @@
+str1: "Novo Reino"
+str2:
+  $content_include:
+    - "{{ _file_dir }}/_defaults/loader_test9_part1.txt"
+    - file: "{{ _file_dir }}/_defaults/loader_test9_part2.txt"
+      vars: { _myvar1: "str1" }
+      constants: { _myconst1: "guerras" }

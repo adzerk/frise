@@ -186,19 +186,45 @@ RSpec.describe Loader do
     )
   end
 
+  it 'should allow including the content of a file directly as text' do
+    loader = Loader.new(exit_on_fail: false)
+
+    conf = loader.load(fixture_path('loader_test9.yml'))
+    expect(conf).to eq('str1' => 'Novo Reino',
+                       'str2' => <<~STR
+                         As armas e os barões assinalados,
+                         Que da ocidental praia Lusitana,
+                         Por mares nunca de antes navegados,
+                         Passaram ainda além da Taprobana,
+                         Em perigos e guerras esforçados,
+                         Mais do que prometia a força humana,
+                         E entre gente remota edificaram
+                         Novo Reino, que tanto sublimaram
+                      STR
+                      )
+  end
+
+  it 'should disallow config objects with $content_include and other keys' do
+    loader = Loader.new(exit_on_fail: false)
+
+    expect { loader.load(fixture_path('loader_test10.yml')) }.to raise_error(
+      'At str2: a $content_include must not have any sibling key'
+    )
+  end
+
   it 'should raise an error when an include or schema value is invalid' do
     loader = Loader.new(exit_on_fail: false)
     expect { loader.load(fixture_path('loader_test7_obj_include.yml')) }.to raise_error(
-      'Illegal value for $include: {}'
+      'At <root>: illegal value for $include: {}'
     )
     expect { loader.load(fixture_path('loader_test7_num_arr_include.yml')) }.to raise_error(
-      'Illegal value for a $include element: 0'
+      'At <root>: illegal value for a $include element: 0'
     )
     expect { loader.load(fixture_path('loader_test7_num_schema.yml')) }.to raise_error(
-      'Illegal value for $schema: 0'
+      'At <root>: illegal value for $schema: 0'
     )
     expect { loader.load(fixture_path('loader_test7_obj_arr_schema.yml')) }.to raise_error(
-      'Illegal value for a $schema element: {}'
+      'At <root>: illegal value for a $schema element: {}'
     )
   end
 

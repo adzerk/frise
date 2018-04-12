@@ -10,8 +10,15 @@ module Frise
   #
   # The load method loads a configuration file, merges the applicable includes and validates its schema.
   class Loader
-    def initialize(include_sym: '$include', schema_sym: '$schema', pre_loaders: [], validators: nil, exit_on_fail: true)
+    def initialize(include_sym: '$include',
+                   content_include_sym: '$content_include',
+                   schema_sym: '$schema',
+                   pre_loaders: [],
+                   validators: nil,
+                   exit_on_fail: true)
+
       @include_sym = include_sym
+      @content_include_sym = content_include_sym
       @schema_sym = schema_sym
       @pre_loaders = pre_loaders
       @validators = validators
@@ -36,35 +43,45 @@ module Frise
     def process_includes(config, at_path, root_config, global_vars)
       return config unless config.class == Hash
 
-      config, defaults_confs = extract_include(config)
-      if defaults_confs.empty?
+      # process $content_include directives
+      config, content_include_confs = extract_content_include(config, at_path)
+      unless content_include_confs.empty?
+        raise "At #{build_path(at_path)}: a #{@content_include_sym} must not have any sibling key" unless config.empty?
+
+        content = ''
+        content_include_confs.each do |include_conf|
+          symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
+          content += Parser.parse_as_text(include_conf['file'], symbol_table) || ''
+        end
+        return content
+      end
+
+      # process $include directives
+      config, include_confs = extract_include(config, at_path)
+      if include_confs.empty?
         config.map { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }.to_h
       else
         Lazy.new do
-          defaults_confs.each do |defaults_conf|
-            extra_vars = (defaults_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
-            extra_consts = defaults_conf['constants'] || {}
-            symbol_table = merge_at(root_config, at_path, config)
-                           .merge(global_vars).merge(extra_vars).merge(extra_consts).merge('_this' => config)
-
-            config = DefaultsLoader.merge_defaults_obj(config, Parser.parse(defaults_conf['file'], symbol_table))
+          include_confs.each do |include_conf|
+            symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
+            config = DefaultsLoader.merge_defaults_obj(config, Parser.parse(include_conf['file'], symbol_table))
           end
           process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars)
         end
       end
     end
 
-    def process_schema_includes(schema, global_vars)
+    def process_schema_includes(schema, at_path, global_vars)
       return schema unless schema.class == Hash
 
-      schema, included_schemas = extract_include(schema)
+      schema, included_schemas = extract_include(schema, at_path)
       if included_schemas.empty?
-        schema.map { |k, v| [k, process_schema_includes(v, global_vars)] }.to_h
+        schema.map { |k, v| [k, process_schema_includes(v, at_path + [k], global_vars)] }.to_h
       else
         included_schemas.each do |defaults_conf|
           schema = Parser.parse(defaults_conf['file'], global_vars).merge(schema)
         end
-        process_schema_includes(schema, global_vars)
+        process_schema_includes(schema, at_path, global_vars)
       end
     end
 
@@ -77,10 +94,10 @@ module Frise
         [k, new_v]
       end.to_h
 
-      config, schema_files = extract_schema(config)
+      config, schema_files = extract_schema(config, at_path)
       schema_files.each do |schema_file|
         schema = Parser.parse(schema_file, global_vars)
-        schema = process_schema_includes(schema, global_vars)
+        schema = process_schema_includes(schema, at_path, global_vars)
 
         errors = Validator.validate_obj(config,
                                         schema,
@@ -93,37 +110,68 @@ module Frise
       config
     end
 
-    def extract_schema(config)
-      extract_special(config, @schema_sym) do |value|
+    def extract_schema(config, at_path)
+      extract_special(config, @schema_sym, at_path) do |value|
         case value
         when String then value
-        else raise "Illegal value for a #{@schema_sym} element: #{value.inspect}"
+        else raise "At #{build_path(at_path)}: illegal value for a #{@schema_sym} element: #{value.inspect}"
         end
       end
     end
 
-    def extract_include(config)
-      extract_special(config, @include_sym) do |value|
+    def extract_include(config, at_path)
+      extract_include_base(config, @include_sym, at_path)
+    end
+
+    def extract_content_include(config, at_path)
+      extract_include_base(config, @content_include_sym, at_path)
+    end
+
+    def extract_include_base(config, sym, at_path)
+      extract_special(config, sym, at_path) do |value|
         case value
         when Hash then value
         when String then { 'file' => value }
-        else raise "Illegal value for a #{@include_sym} element: #{value.inspect}"
+        else raise "At #{build_path(at_path)}: illegal value for a #{sym} element: #{value.inspect}"
         end
       end
     end
 
-    def extract_special(config, key)
+    def extract_special(config, key, at_path)
       case config[key]
       when nil then [config, []]
       when Array then [config.reject { |k| k == key }, config[key].map { |e| yield e }]
-      else raise "Illegal value for #{key}: #{config[key].inspect}"
+      else raise "At #{build_path(at_path)}: illegal value for #{key}: #{config[key].inspect}"
       end
     end
 
+    # merges the `to_merge` value on `config` at path `at_path`
     def merge_at(config, at_path, to_merge)
       return config.merge(to_merge) if at_path.empty?
       head, *tail = at_path
       config.merge(head => merge_at(config[head], tail, to_merge))
+    end
+
+    # builds the symbol table for the Liquid renderization of a file, based on:
+    #   - `root_config`: the root of the whole config
+    #   - `at_path`: the current path
+    #   - `config`: the config subtree being built
+    #   - `global_vars`: the global variables
+    #   - `include_conf`: the $include or $content_include configuration
+    def build_symbol_table(root_config, at_path, config, global_vars, include_conf)
+      extra_vars = (include_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
+      extra_consts = include_conf['constants'] || {}
+
+      merge_at(root_config, at_path, config)
+        .merge(global_vars)
+        .merge(extra_vars)
+        .merge(extra_consts)
+        .merge('_this' => config)
+    end
+
+    # builds a user-friendly string indicating a path
+    def build_path(at_path)
+      at_path.empty? ? '<root>' : at_path.join('.')
     end
   end
 end
