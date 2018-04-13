@@ -23,7 +23,7 @@ module Frise
       private
 
       def with_internal_vars(file, symbol_table)
-        symbol_table.merge('_file_dir' => File.dirname(file))
+        symbol_table.merge('_file_dir' => File.expand_path(File.dirname(file)))
       end
     end
   end
