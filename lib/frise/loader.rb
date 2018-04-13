@@ -23,6 +23,12 @@ module Frise
       @pre_loaders = pre_loaders
       @validators = validators
       @exit_on_fail = exit_on_fail
+
+      @defaults_loader = DefaultsLoader.new(
+        include_sym: include_sym,
+        content_include_sym: content_include_sym,
+        schema_sym: schema_sym
+      )
     end
 
     def load(config_file, global_vars = {})
@@ -50,7 +56,7 @@ module Frise
 
         content = ''
         content_include_confs.each do |include_conf|
-          symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
+          symbol_table = build_symbol_table(root_config, at_path, nil, global_vars, include_conf)
           content += Parser.parse_as_text(include_conf['file'], symbol_table) || ''
         end
         return content
@@ -64,9 +70,13 @@ module Frise
         Lazy.new do
           include_confs.each do |include_conf|
             symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
-            config = DefaultsLoader.merge_defaults_obj(config, Parser.parse(include_conf['file'], symbol_table))
+            included_config = Parser.parse(include_conf['file'], symbol_table)
+
+            config = @defaults_loader.merge_defaults_obj(config, included_config)
+            config = process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars)
           end
-          process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars)
+          updated_root_config = merge_at(root_config, at_path, config)
+          config.map { |k, v| [k, process_includes(v, at_path + [k], updated_root_config, global_vars)] }.to_h
         end
       end
     end
@@ -162,7 +172,7 @@ module Frise
       extra_vars = (include_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
       extra_consts = include_conf['constants'] || {}
 
-      merge_at(root_config, at_path, config)
+      (config ? merge_at(root_config, at_path, config) : root_config)
         .merge(global_vars)
         .merge(extra_vars)
         .merge(extra_consts)
