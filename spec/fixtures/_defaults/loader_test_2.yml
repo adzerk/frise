@@ -1,4 +1,0 @@
-{% if _id %}
-id: "{{ _id }}"
-{% endif %}
-description: "Description of {{ name }}"

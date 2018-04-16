@@ -1,0 +1,5 @@
+$include: ["{{ _file_dir }}/loader_test3_base.yml"]
+
+id: String
+name: String
+description: String

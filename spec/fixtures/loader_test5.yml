@@ -1,0 +1,4 @@
+$schema: ["{{ _file_dir }}/_schemas/loader_test5_1.yml", "{{ _file_dir }}/_schemas/loader_test5_2.yml"]
+$include: ["{{ _file_dir }}/_defaults/loader_test5_1.yml", "{{ _file_dir }}/_defaults/loader_test5_2.yml"]
+
+key1: "abc"

@@ -10,9 +10,20 @@ module Frise
     class << self
       def parse(file, symbol_table = nil)
         return nil unless File.file? file
-        content = File.open(file).read
-        content = Liquid::Template.parse(content).render symbol_table if symbol_table
-        YAML.safe_load(content, [], [], true) || {}
+        YAML.safe_load(parse_as_text(file, symbol_table), [], [], true) || {}
+      end
+
+      def parse_as_text(file, symbol_table = nil)
+        return nil unless File.file? file
+        content = File.read(file)
+        content = Liquid::Template.parse(content).render with_internal_vars(file, symbol_table) if symbol_table
+        content
+      end
+
+      private
+
+      def with_internal_vars(file, symbol_table)
+        symbol_table.merge('_file_dir' => File.expand_path(File.dirname(file)))
       end
     end
   end

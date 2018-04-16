@@ -1,0 +1,2 @@
+$allow_unknown_keys: true
+key2: Integer
