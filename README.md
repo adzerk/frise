@@ -44,7 +44,7 @@ Currently Frise only supports YAML files, but it may support JSON and other form
 
 ### Default values
 
-By using the `$include` directive pointing to the files with default values can be found (in this example,
+By using the `$include` directive pointing to the files where default values can be found (in this example,
 [example/_defaults/config.yml](example/_defaults/config.yml)), Frise can handle its application internally on load time:
 
 ```ruby
