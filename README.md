@@ -1,12 +1,13 @@
 # Frise
-[![Build Status](https://travis-ci.org/ShiftForward/frise.svg?branch=master)](https://travis-ci.org/ShiftForward/frise)
-[![Coverage Status](https://coveralls.io/repos/github/ShiftForward/frise/badge.svg?branch=master)](https://coveralls.io/github/ShiftForward/frise?branch=master)
+[![Build Status](https://travis-ci.org/velocidi/frise.svg?branch=master)](https://travis-ci.org/velocidi/frise)
+[![Coverage Status](https://coveralls.io/repos/github/velocidi/frise/badge.svg?branch=master)](https://coveralls.io/github/velocidi/frise?branch=master)
 [![Gem Version](https://badge.fury.io/rb/frise.svg)](https://badge.fury.io/rb/frise)
 
 Frise is a library for loading configuration files as native Ruby structures. Besides reading and
 parsing the files themselves, it also:
 
-- Completes it with default values specified in another file or set of files;
+- Allows defining other files to be merged anywhere in the config, which can be used to provide default values specified
+  in another file or set of files;
 - Interprets [Liquid](https://shopify.github.io/liquid) templates in configs and defaults;
 - Validates the loaded config according to a schema file or set of files.
 
@@ -24,7 +25,6 @@ The simplest example would be to load [a simple configuration](example/config.ym
 
 ```ruby
 require 'frise'
-require 'pp'
 
 loader = Frise::Loader.new
 loader.load('example/config.yml')
@@ -44,12 +44,11 @@ Currently Frise only supports YAML files, but it may support JSON and other form
 
 ### Default values
 
-By defining directories where the files with default values can be found (in this example,
-[example/_defaults](example/_defaults)), Frise can handle its application internally on load time:
+By using the `$include` directive pointing to the files where default values can be found (in this example,
+[example/_defaults/config.yml](example/_defaults/config.yml)), Frise can handle its application internally on load time:
 
 ```ruby
-loader = Frise::Loader.new(defaults_load_paths: ['example/_defaults'])
-loader.load('example/config.yml')
+loader.load('example/config_with_defaults.yml')
 # => {"movies"=>
 #     [{"title"=>"The Shawshank Redemption",
 #       "year"=>1994,
@@ -75,15 +74,11 @@ config.
 ### Schemas
 
 Additionally, configuration files can also be validated against a schema. By specifying
-`schema_load_paths`, users can provide directories where schema files such as
-[example/_schemas/config.yml](example/_schemas/config.yml) can be found:
+`$schema` in the config, users can provide schema files such as
+[example/_schemas/config.yml](example/_schemas/config.yml):
 
 ```ruby
-loader = Frise::Loader.new(
-  schema_load_paths: ['example/_schemas'],
-  defaults_load_paths: ['example/_defaults'])
-
-loader.load('example/config.yml')
+loader.load('example/config_with_defaults_and_schema.yml')
 # {"movies"=>
 #   [{"title"=>"The Shawshank Redemption",
 #     "year"=>1994,
@@ -106,16 +101,14 @@ missing and Frise by default prints a summary of the errors and terminates the p
 
 
 ```ruby
-loader = Frise::Loader.new(schema_load_paths: ['example/_schemas'])
-
-loader.load('example/config.yml')
+loader.load('example/config_with_schema.yml')
 # 2 config error(s) found:
 #  - At movies.0.director: missing required value
 #  - At ui: missing required value
 ```
 
 Once more, the structure of the schema mimics the structure of the config itself, making it easy to
-write schemas and to create a config scaffold from its schema later.
+write schemas first and create a config scaffold from its schema later.
 
 Users can check a whole range of properties in config values besides their type: optional values,
 hashes with validated keys, hashes with unknown keys and even custom validations are also supported.
