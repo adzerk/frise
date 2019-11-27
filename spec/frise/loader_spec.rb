@@ -237,8 +237,16 @@ RSpec.describe Loader do
     loader = Loader.new(exit_on_fail: false)
     conf = loader.load(fixture_path('loader_test11.yml'))
 
-    expect(conf).to eq('foo' => {'bar' => {'other' => 'Something',
-                                           'baz' => 'Hello World',
-                                           'var1' => {'var2' => 'Hello World'}}})
+    expect(conf).to eq(
+      'foo' => {
+        'bar' => {
+          'other' => 'Something',
+          'baz' => 'Hello World',
+          'var1' => {
+            'var2' => 'Hello World'
+          }
+        }
+      }
+    )
   end
 end
