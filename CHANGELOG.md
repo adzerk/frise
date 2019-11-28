@@ -1,3 +1,10 @@
+### 0.4.0 (Unreleased)
+
+- Breaking changes
+  - Recursive inclusions now respect the hierarchy of configuration files, avoiding inclusions lower
+    in the hiearchy to be resolved before ones higher in the hierarchy
+    ([#14](https://github.com/velocidi/frise/pull/14)).
+
 ### 0.3.0 (April 16, 2018)
 
 - Breaking changes
