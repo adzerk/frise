@@ -37,13 +37,13 @@ module Frise
         default_type = schema[:enum] || schema[:one_of] ? 'Object' : 'Hash'
         { type: default_type }.merge(schema)
       when Symbol then { type: 'Object', validate: schema }
-      when Array then
+      when Array
         if schema.size == 1
           { type: 'Array', all: schema[0] }
         else
           (raise "Invalid schema: #{schema.inspect}")
         end
-      when String then
+      when String
         if schema.end_with?('?')
           { type: schema[0..-2], optional: true }
         else
@@ -83,8 +83,8 @@ module Frise
       if full_schema[:validate]
         begin
           @validators.method(full_schema[:validate]).call(@root, obj)
-        rescue StandardError => ex
-          add_validation_error(path, ex.message)
+        rescue StandardError => e
+          add_validation_error(path, e.message)
         end
       end
       true
@@ -126,9 +126,7 @@ module Frise
       if expected_types.size == 1 && expected_types[0].ancestors.member?(Enumerable)
         hash = obj.is_a?(Hash) ? obj : Hash[obj.map.with_index { |x, i| [i, x] }]
         hash.each do |key, value|
-          if full_schema[:all_keys] && !key.is_a?(Symbol)
-            validate_object(path, key, full_schema[:all_keys])
-          end
+          validate_object(path, key, full_schema[:all_keys]) if full_schema[:all_keys] && !key.is_a?(Symbol)
 
           next if processed_keys.member? key
           if full_schema[:all]

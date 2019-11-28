@@ -200,7 +200,7 @@ RSpec.describe Loader do
                          Mais do que prometia a força humana,
                          E entre gente remota edificaram
                          Novo Reino, que tanto sublimaram
-                      STR
+                       STR
                       )
   end
 
@@ -231,6 +231,23 @@ RSpec.describe Loader do
   it 'should return nil if the file does not exist' do
     loader = Loader.new(exit_on_fail: false)
     expect(loader.load('non_existing_path.yml')).to eq(nil)
+  end
+
+  it 'should allow referencing variables included in other files higher up in the configuration tree' do
+    loader = Loader.new(exit_on_fail: false)
+    conf = loader.load(fixture_path('loader_test11.yml'))
+
+    expect(conf).to eq(
+      'foo' => {
+        'bar' => {
+          'other' => 'Something',
+          'baz' => 'Hello World',
+          'var1' => {
+            'var2' => 'Hello World'
+          }
+        }
+      }
+    )
   end
 
   it 'should validate schemas included deeper in the config file hierarchy' do

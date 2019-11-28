@@ -1,0 +1,6 @@
+$include:
+  - "{{ _file_dir }}/loader_test11_include1.yml"
+
+foo:
+  bar:
+    $include: ["{{ _file_dir }}/loader_test11_include2.yml"]
