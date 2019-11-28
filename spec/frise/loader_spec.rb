@@ -200,7 +200,7 @@ RSpec.describe Loader do
                          Mais do que prometia a força humana,
                          E entre gente remota edificaram
                          Novo Reino, que tanto sublimaram
-                      STR
+                       STR
                       )
   end
 

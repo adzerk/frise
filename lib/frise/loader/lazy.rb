@@ -12,11 +12,15 @@ module Frise
         @__target_object__ ||= @callable.call
       end
 
-      # rubocop:disable Style/MethodMissing
+      # rubocop:disable Style/MethodMissingSuper
       def method_missing(method_name, *args, &block)
         __target_object__.send(method_name, *args, &block)
       end
-      # rubocop:enable Style/MethodMissing
+      # rubocop:enable Style/MethodMissingSuper
+
+      def respond_to_missing?(method_name, include_private = false)
+        __target_object__.respond_to?(method_name, include_private)
+      end
     end
   end
 end
