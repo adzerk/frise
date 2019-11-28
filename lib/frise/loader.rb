@@ -74,7 +74,7 @@ module Frise
           symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
           included_config = Parser.parse(include_conf['file'], symbol_table)
           config = @defaults_loader.merge_defaults_obj(config, included_config)
-          config = process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars, rest_include_confs)
+          process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars, rest_include_confs)
         end
       end
     end
