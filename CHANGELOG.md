@@ -1,3 +1,9 @@
+### 0.4.0 (Unreleased)
+
+- Bug fixes
+  - Fix error messages from validations happening deeper in the config hierarchy, that were wrongly
+    missing the first character in their path ([#16](https://github.com/velocidi/frise/pull/16)).
+
 ### 0.3.0 (April 16, 2018)
 
 - Breaking changes
