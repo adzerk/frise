@@ -1,8 +1,10 @@
 AllCops:
   TargetRubyVersion: '2.3'
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
 Metrics:
   Enabled: false
-Naming/UncommunicativeBlockParamName:
+Naming/BlockParameterName:
   Enabled: false
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Enabled: false
