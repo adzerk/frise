@@ -7,11 +7,11 @@ require 'frise/version'
 Gem::Specification.new do |spec|
   spec.name          = 'frise'
   spec.version       = Frise::VERSION
-  spec.authors       = ['ShiftForward']
-  spec.email         = ['info@shiftforward.eu']
+  spec.authors       = ['Velocidi']
+  spec.email         = ['hello@velocidi.com']
 
   spec.summary       = 'Ruby config library with schema validation, default values and templating'
-  spec.homepage      = 'https://github.com/ShiftForward/frise'
+  spec.homepage      = 'https://github.com/velocidi/frise'
   spec.license       = 'Apache-2.0'
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
