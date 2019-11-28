@@ -1,0 +1,3 @@
+$allow_unknown_keys: true
+value1: String
+value2: Int

@@ -27,7 +27,7 @@ module Frise
     end
 
     def add_validation_error(path, msg)
-      logged_path = path.empty? ? '<root>' : path[1..-1]
+      logged_path = path.empty? ? '<root>' : path
       @errors << "At #{logged_path}: #{msg}"
     end
 
@@ -115,7 +115,7 @@ module Frise
     def validate_spec_keys(full_schema, obj, path, processed_keys)
       full_schema.each do |spec_key, spec_value|
         next if spec_key.is_a?(Symbol)
-        validate_object("#{path}.#{spec_key}", obj[spec_key], spec_value)
+        validate_object(path.empty? ? spec_key : "#{path}.#{spec_key}", obj[spec_key], spec_value)
         processed_keys << spec_key
       end
       true
@@ -130,7 +130,7 @@ module Frise
 
           next if processed_keys.member? key
           if full_schema[:all]
-            validate_object("#{path}.#{key}", value, full_schema[:all])
+            validate_object(path.empty? ? key : "#{path}.#{key}", value, full_schema[:all])
           elsif !full_schema[:allow_unknown_keys]
             add_validation_error(path, "unknown key: #{key}")
           end

@@ -1,0 +1,3 @@
+variable1:
+  $schema: ["{{ _file_dir }}/_schemas/loader_test12.yml"]
+  value1: "Hello"

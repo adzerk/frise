@@ -4,6 +4,9 @@
   - Recursive inclusions now respect the hierarchy of configuration files, avoiding inclusions lower
     in the hiearchy to be resolved before ones higher in the hierarchy
     ([#14](https://github.com/velocidi/frise/pull/14)).
+- Bug fixes
+  - Fix error messages from validations happening deeper in the config hierarchy, that were wrongly
+    missing the first character in their path ([#16](https://github.com/velocidi/frise/pull/16)).
 
 ### 0.3.0 (April 16, 2018)
 
