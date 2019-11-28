@@ -46,7 +46,7 @@ module Frise
 
     private
 
-    def process_includes(config, at_path, root_config, global_vars)
+    def process_includes(config, at_path, root_config, global_vars, include_confs_stack = [])
       return config unless config.class == Hash
 
       # process $content_include directives
@@ -63,20 +63,18 @@ module Frise
       end
 
       # process $include directives
-      config, include_confs = extract_include(config, at_path)
+      config, next_include_confs = extract_include(config, at_path)
+      include_confs = next_include_confs + include_confs_stack
       if include_confs.empty?
         config.map { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }.to_h
       else
         Lazy.new do
-          include_confs.each do |include_conf|
-            symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
-            included_config = Parser.parse(include_conf['file'], symbol_table)
-
-            config = @defaults_loader.merge_defaults_obj(config, included_config)
-            config = process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars)
-          end
-          updated_root_config = merge_at(root_config, at_path, config)
-          config.map { |k, v| [k, process_includes(v, at_path + [k], updated_root_config, global_vars)] }.to_h
+          include_conf = include_confs.first
+          rest_include_confs = include_confs[1..-1]
+          symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
+          included_config = Parser.parse(include_conf['file'], symbol_table)
+          config = @defaults_loader.merge_defaults_obj(config, included_config)
+          process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars, rest_include_confs)
         end
       end
     end

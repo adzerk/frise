@@ -232,4 +232,21 @@ RSpec.describe Loader do
     loader = Loader.new(exit_on_fail: false)
     expect(loader.load('non_existing_path.yml')).to eq(nil)
   end
+
+  it 'should allow referencing variables included in other files higher up in the configuration tree' do
+    loader = Loader.new(exit_on_fail: false)
+    conf = loader.load(fixture_path('loader_test11.yml'))
+
+    expect(conf).to eq(
+      'foo' => {
+        'bar' => {
+          'other' => 'Something',
+          'baz' => 'Hello World',
+          'var1' => {
+            'var2' => 'Hello World'
+          }
+        }
+      }
+    )
+  end
 end
