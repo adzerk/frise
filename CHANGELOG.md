@@ -1,4 +1,4 @@
-### 0.4.0 (Unreleased)
+### 0.4.0 (November 29, 2019)
 
 - Breaking changes
   - Recursive inclusions now respect the hierarchy of configuration files, avoiding inclusions lower
