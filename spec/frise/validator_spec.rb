@@ -93,16 +93,20 @@ RSpec.describe Validator do
   end
 
   it 'should validate that there are unknown keys unless $allow_unknown_keys is used' do
-    schema1 = { 'int' => 'Integer' }
-    schema2 = { 'int' => 'Integer', '$allow_unknown_keys' => true }
+    schema1 = { 'int' => 'Integer', 'obj' => { 'str' => 'String' } }
+    schema2 = { 'int' => 'Integer', 'obj' => { 'str' => 'String' }, '$allow_unknown_keys' => true }
 
-    conf = { 'int' => 45, 'str' => 'abc' }
+    conf = { 'int' => 45, 'str' => 'abc', 'obj' => { 'str' => 'string' } }
     errors = validate(conf, schema1)
     expect(errors).to eq ['At <root>: unknown key: str']
 
-    conf = { 'int' => 45, 'str' => 'abc' }
+    conf = { 'int' => 45, 'str' => 'abc', 'obj' => { 'str' => 'string' } }
     errors = validate(conf, schema2)
     expect(errors).to eq []
+
+    conf = { 'int' => 45, 'obj' => { 'str' => 'string', 'str2' => 'something' } }
+    errors = validate(conf, schema2)
+    expect(errors).to eq ['At obj: unknown key: str2']
   end
 
   it 'should allow custom validations in schemas' do
