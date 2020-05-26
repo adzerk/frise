@@ -163,7 +163,7 @@ module Frise
     end
 
     def self.validate_obj(config, schema, options = {})
-      validate_obj_at(config, [], schema, options)
+      validate_obj_at(config, [], schema, **options)
     end
 
     def self.validate_obj_at(config, at_path, schema, path_prefix: nil, validators: nil, print: nil, fatal: nil, raise_error: nil)
@@ -188,11 +188,11 @@ module Frise
     end
 
     def self.validate(config, schema_file, options = {})
-      validate_obj_at(config, [], Parser.parse(schema_file) || { allow_unknown_keys: true }, options)
+      validate_obj_at(config, [], Parser.parse(schema_file) || { allow_unknown_keys: true }, **options)
     end
 
     def self.validate_at(config, at_path, schema_file, options = {})
-      validate_obj_at(config, at_path, Parser.parse(schema_file) || { allow_unknown_keys: true }, options)
+      validate_obj_at(config, at_path, Parser.parse(schema_file) || { allow_unknown_keys: true }, **options)
     end
   end
 
