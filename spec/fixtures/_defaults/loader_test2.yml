@@ -7,3 +7,5 @@ description: "Description of {{ name }} ({{ _extra.a }})"
 {% else %}
 description: "Description of {{ name }}"
 {% endif %}
+
+other: "plain"
