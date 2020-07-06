@@ -13,6 +13,7 @@ module Frise
     def initialize(include_sym: '$include',
                    content_include_sym: '$content_include',
                    schema_sym: '$schema',
+                   delete_sym: '$delete',
                    pre_loaders: [],
                    validators: nil,
                    exit_on_fail: true)
@@ -20,6 +21,7 @@ module Frise
       @include_sym = include_sym
       @content_include_sym = content_include_sym
       @schema_sym = schema_sym
+      @delete_sym = delete_sym
       @pre_loaders = pre_loaders
       @validators = validators
       @exit_on_fail = exit_on_fail
@@ -27,7 +29,8 @@ module Frise
       @defaults_loader = DefaultsLoader.new(
         include_sym: include_sym,
         content_include_sym: content_include_sym,
-        schema_sym: schema_sym
+        schema_sym: schema_sym,
+        delete_sym: delete_sym
       )
     end
 
@@ -40,6 +43,7 @@ module Frise
       end
 
       config = process_includes(config, [], config, global_vars) if @include_sym
+      config = omit_deleted(config)
       config = process_schemas(config, [], global_vars) if @schema_sym
       config
     end
@@ -160,6 +164,17 @@ module Frise
       config.merge(head => merge_at(config[head], tail, to_merge))
     end
 
+    # returns the config without the keys whose values are @delete_sym
+    def omit_deleted(config)
+      config.each_with_object({}) do |(k, v), new_hash|
+        if v.is_a?(Hash)
+          new_hash[k] = omit_deleted(v)
+        else
+          new_hash[k] = v unless v == @delete_sym
+        end
+      end
+    end
+
     # builds the symbol table for the Liquid renderization of a file, based on:
     #   - `root_config`: the root of the whole config
     #   - `at_path`: the current path
@@ -170,7 +185,7 @@ module Frise
       extra_vars = (include_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
       extra_consts = include_conf['constants'] || {}
 
-      (config ? merge_at(root_config, at_path, config) : root_config)
+      omit_deleted(config ? merge_at(root_config, at_path, config) : root_config)
         .merge(global_vars)
         .merge(extra_vars)
         .merge(extra_consts)
