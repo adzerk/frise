@@ -1,3 +1,9 @@
+### 0.4.1 (tbd)
+
+- New features
+  - `$delete` directive is now available in config files, allowing users to delete parts of the
+    config sub-tree ([#20](https://github.com/velocidi/frise/pull/20)).
+
 ### 0.4.0 (November 29, 2019)
 
 - Breaking changes
