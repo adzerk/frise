@@ -43,7 +43,6 @@ module Frise
       end
 
       config = process_includes(config, [], config, global_vars) if @include_sym
-      config = omit_deleted(config)
       config = process_schemas(config, [], global_vars) if @schema_sym
       config
     end
@@ -69,18 +68,19 @@ module Frise
       # process $include directives
       config, next_include_confs = extract_include(config, at_path)
       include_confs = next_include_confs + include_confs_stack
-      if include_confs.empty?
-        config.map { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }.to_h
-      else
-        Lazy.new do
-          include_conf = include_confs.first
-          rest_include_confs = include_confs[1..-1]
-          symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
-          included_config = Parser.parse(include_conf['file'], symbol_table)
-          config = @defaults_loader.merge_defaults_obj(config, included_config)
-          process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars, rest_include_confs)
-        end
-      end
+      res = if include_confs.empty?
+              config.map { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }.to_h
+            else
+              Lazy.new do
+                include_conf = include_confs.first
+                rest_include_confs = include_confs[1..-1]
+                symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
+                included_config = Parser.parse(include_conf['file'], symbol_table)
+                config = @defaults_loader.merge_defaults_obj(config, included_config)
+                process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars, rest_include_confs)
+              end
+            end
+      omit_deleted(res)
     end
 
     def process_schema_includes(schema, at_path, global_vars)
