@@ -42,8 +42,8 @@ module Frise
         config = pre_loader.call(config)
       end
 
-      config = process_includes(config, [], config, global_vars) if @include_sym
-      config = process_schemas(config, [], global_vars) if @schema_sym
+      config = process_includes(config, [], config, global_vars) unless @include_sym.nil?
+      config = process_schemas(config, [], global_vars) unless @schema_sym.nil?
       config
     end
 
@@ -80,7 +80,7 @@ module Frise
                 process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars, rest_include_confs)
               end
             end
-      omit_deleted(res)
+      @delete_sym.nil? ? res : omit_deleted(res)
     end
 
     def process_schema_includes(schema, at_path, global_vars)
