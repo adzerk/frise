@@ -1,4 +1,4 @@
-### 0.4.1 (tbd)
+### 0.4.1 (July 7, 2020)
 
 - New features
   - `$delete` directive is now available in config files, allowing users to delete parts of the
