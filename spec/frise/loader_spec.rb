@@ -72,12 +72,16 @@ RSpec.describe Loader do
     expect(conf).to eq(
       'id' => 'myobj',
       'name' => 'My Object',
-      'description' => 'Description of My Object (42)'
+      'description' => 'Description of My Object (42)',
+      'other' => 'plain'
     )
   end
 
-  it 'should allow using a different key or no key for inclusions and schemas' do
-    loader = Loader.new(include_sym: '__custom_inc', schema_sym: '__custom_sch', exit_on_fail: false)
+  it 'should allow using a different key or no key for inclusions/schemas/deletes' do
+    loader = Loader.new(include_sym: '__custom_inc',
+                        schema_sym: '__custom_sch',
+                        delete_sym: '__custom_del',
+                        exit_on_fail: false)
 
     conf = loader.load(fixture_path('loader_test2_all_alt.yml'), '_id' => 'myobj')
     expect(conf).to eq(
@@ -158,7 +162,8 @@ RSpec.describe Loader do
     expect(conf).to eq(
       'id' => 'myobj',
       'name' => 'My Object',
-      'description' => 'Description of My Object'
+      'description' => 'Description of My Object',
+      'other' => 'plain'
     )
 
     conf = loader.load(fixture_path('loader_test2_templated.yml'), '_with_schema' => true)
@@ -171,7 +176,8 @@ RSpec.describe Loader do
     expect(conf).to eq(
       'id' => 'myobj',
       'name' => 'My Object',
-      'description' => 'Description of My Object'
+      'description' => 'Description of My Object',
+      'other' => 'plain'
     )
   end
 
@@ -256,5 +262,14 @@ RSpec.describe Loader do
       "1 config error(s) found:\n" \
       " - At variable1.value2: missing required value\n"
     ).to_stdout.and raise_error(SystemExit)
+  end
+
+  it 'should delete sub-tree when value is $delete' do
+    loader = Loader.new(exit_on_fail: false)
+
+    conf = loader.load(fixture_path('loader_test13.yml'))
+    expect(conf).to eq(
+      'bar' => 'str'
+    )
   end
 end

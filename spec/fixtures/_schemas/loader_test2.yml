@@ -1,3 +1,4 @@
 id: String
 name: String
 description: String
+other: String?

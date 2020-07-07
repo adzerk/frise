@@ -10,10 +10,11 @@ module Frise
   class DefaultsLoader
     SYMBOLS = %w[$all $optional].freeze
 
-    def initialize(include_sym: '$include', content_include_sym: '$content_include', schema_sym: '$schema')
+    def initialize(include_sym: '$include', content_include_sym: '$content_include', schema_sym: '$schema', delete_sym: '$delete')
       @include_sym = include_sym
       @content_include_sym = content_include_sym
       @schema_sym = schema_sym
+      @delete_sym = delete_sym
     end
 
     def widened_class(obj)
@@ -36,6 +37,9 @@ module Frise
         elsif defaults['$optional'] then nil
         else merge_defaults_obj({}, defaults)
         end
+
+      elsif config == @delete_sym
+        config
 
       elsif defaults_class == 'Array' && config_class == 'Array'
         defaults + config

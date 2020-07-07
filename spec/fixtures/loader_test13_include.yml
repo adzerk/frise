@@ -1,0 +1,7 @@
+$include:
+  - "{{ _file_dir }}/defaults/loader_test13.yml"
+
+foo: "str2"
+bar: $delete
+baz: $delete
+liquid: {% if foo %}true{% endif %}

@@ -112,4 +112,24 @@ RSpec.describe DefaultsLoader do
       .to raise_error 'Cannot merge config {"$content_include"=>["str.txt"]} (String) ' \
           'with default {"str"=>"abc", "int"=>4, "bool"=>true} (Hash)'
   end
+
+  it 'should override defaults when value is $delete' do
+    conf = {
+      'str' => '$delete',
+      'int' => '$delete',
+      'bool' => '$delete',
+      'arr' => '$delete',
+      'obj' => { 'key1' => '$delete', 'key3' => '$delete' }
+    }
+    conf = DefaultsLoader.new.merge_defaults(conf, fixture_path('all_types.yml'))
+    expect(conf['str']).to eq '$delete'
+    expect(conf['int']).to eq '$delete'
+    expect(conf['bool']).to eq '$delete'
+    expect(conf['arr']).to eq '$delete'
+    expect(conf['obj']).to eq(
+      'key1' => '$delete',
+      'key2' => 'value2',
+      'key3' => '$delete'
+    )
+  end
 end
