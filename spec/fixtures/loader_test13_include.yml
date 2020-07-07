@@ -4,3 +4,4 @@ $include:
 foo: "str2"
 bar: $delete
 baz: $delete
+liquid: {% if foo %}true{% endif %}
