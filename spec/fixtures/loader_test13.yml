@@ -3,3 +3,4 @@ $include:
 
 foo: $delete
 bar: "str"
+other: $delete
