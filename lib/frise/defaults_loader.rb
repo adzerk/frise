@@ -26,45 +26,65 @@ module Frise
     end
 
     def merge_defaults_obj(config, defaults)
+      puts ""
+      puts ""
+      puts ""
+      puts ""
+      puts config.inspect
+      puts defaults.inspect
       config_class = widened_class(config)
       defaults_class = widened_class(defaults)
 
-      if defaults.nil?
+      result = if defaults.nil?
+        puts "--> 1"
         config
 
       elsif config.nil?
+        puts "--> 2"
         if defaults_class != 'Hash' then defaults
         elsif defaults['$optional'] then nil
         else merge_defaults_obj({}, defaults)
         end
 
       elsif config == @delete_sym
+        puts "--> 3"
         config
 
       elsif defaults_class == 'Array' && config_class == 'Array'
+        puts "--> 4"
         defaults + config
 
       elsif defaults_class == 'Hash' && defaults['$all'] && config_class == 'Array'
+        puts "--> 5"
         config.map { |elem| merge_defaults_obj(elem, defaults['$all']) }
 
       elsif defaults_class == 'Hash' && config_class == 'Hash'
+        puts "--> 6"
         new_config = {}
         (config.keys + defaults.keys).uniq.each do |key|
           next if SYMBOLS.include?(key)
+
           new_config[key] = config[key]
+          puts config[key].inspect, defaults[key]
           new_config[key] = merge_defaults_obj(new_config[key], defaults[key]) if defaults.key?(key)
+          puts config[key].inspect
           new_config[key] = merge_defaults_obj(new_config[key], defaults['$all']) unless new_config[key].nil?
+          puts config[key].inspect
           new_config.delete(key) if new_config[key].nil?
         end
         new_config
 
       elsif defaults_class != config_class
+        puts "--> 7"
         raise "Cannot merge config #{config.inspect} (#{widened_class(config)}) " \
           "with default #{defaults.inspect} (#{widened_class(defaults)})"
 
       else
         config
-      end
+               end
+
+      puts "FINAL RESULT: ", result.inspect
+      result
     end
 
     def merge_defaults_obj_at(config, at_path, defaults)

@@ -4,3 +4,6 @@ $include:
 foo: $delete
 bar: "str"
 other: $delete
+my_obj:
+  my_array:
+    - 'three'

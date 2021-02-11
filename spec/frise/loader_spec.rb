@@ -269,7 +269,8 @@ RSpec.describe Loader do
 
     conf = loader.load(fixture_path('loader_test13.yml'))
     expect(conf).to eq(
-      'bar' => 'str'
+      'bar' => 'str',
+      'my_obj' => { 'my_array' => ['three'] }
     )
   end
 end

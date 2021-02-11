@@ -1,3 +1,7 @@
 bar: "str3"
 baz: "str4"
 other: "str5"
+my_obj:
+  my_array:
+    - 'one'
+    - 'two'

@@ -5,3 +5,5 @@ foo: "str2"
 bar: $delete
 baz: $delete
 liquid: {% if foo %}true{% endif %}
+my_obj:
+  my_array: $delete
