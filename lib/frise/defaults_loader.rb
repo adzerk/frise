@@ -23,6 +23,29 @@ module Frise
       @delete_sym = delete_sym
     end
 
+    # returns the config without the keys whose values are marked for removal
+    def clear_deleted_markers(config)
+        if config.is_a?(Hash)
+          config.each_with_object({}) do |(k, v), new_hash|
+            if v.instance_of?(Frise::DefaultsLoader::DeleteMarker)
+              new_hash[k] = v.value unless v.value.nil?
+            elsif v != @delete_sym
+              new_hash[k] = clear_deleted_markers(v)
+            end
+          end
+        elsif config.is_a?(Array)
+          config.each_with_object([]) do |elem, new_arr|
+            if elem.instance_of?(Frise::DefaultsLoader::DeleteMarker)
+              new_arr.push(elem.value) unless v.value.nil?
+            elsif elem != @delete_sym
+              new_arr.push(clear_deleted_markers(elem))
+            end
+          end
+        else
+          config
+        end
+    end
+
     def widened_class(obj)
       class_name = obj.class.to_s
       return 'String' if class_name == 'Hash' && !obj[@content_include_sym].nil?
@@ -45,8 +68,8 @@ module Frise
         else merge_defaults_obj({}, defaults)
         end
 
-      elsif config == @delete_sym
-        config
+      elsif config == @delete_sym || defaults == @delete_sym || config_class == "Frise::DefaultsLoader::DeleteMarker" || defaults_class == "Frise::DefaultsLoader::DeleteMarker"
+        DeleteMarker.new(@delete_sym, config)
 
       elsif defaults_class == 'Array' && config_class == 'Array'
         defaults + config
@@ -88,6 +111,32 @@ module Frise
     def merge_defaults_at(config, at_path, defaults_file, symbol_table = config)
       defaults = Parser.parse(defaults_file, symbol_table) || {}
       merge_defaults_obj_at(config, at_path, defaults)
+    end
+
+    private
+
+    class DeleteMarker
+      attr_accessor :value
+
+      def initialize(delete_sym, left)
+        @delete_sym = delete_sym
+
+        if left === delete_sym
+          @value = nil
+        elsif left.instance_of?(DeleteMarker)
+          @value = left.value
+        else
+          @value = left
+        end
+      end
+
+      def to_s
+        if @value.nil?
+          @delete_sym.to_s
+        else
+          @value.to_s
+        end
+      end
     end
   end
 end
