@@ -1,7 +1,7 @@
 ### 0.5.0 (TBD)
 
 - Breaking changes
-  - Increase minimum required ruby version to 2.6.0 ([]()).
+  - Increase minimum required ruby version to 2.6.0 ([#22](https://github.com/velocidi/frise/pull/22)).
 
 ### 0.4.1 (July 7, 2020)
 
