@@ -270,7 +270,7 @@ RSpec.describe Loader do
     conf = loader.load(fixture_path('loader_test13.yml'))
     expect(conf).to eq(
       'bar' => 'str',
-      'kept_from_default' => "str"
+      'kept_from_default' => 'str'
     )
   end
 end
