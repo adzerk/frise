@@ -10,7 +10,13 @@ module Frise
   class DefaultsLoader
     SYMBOLS = %w[$all $optional].freeze
 
-    def initialize(include_sym: '$include', content_include_sym: '$content_include', schema_sym: '$schema', delete_sym: '$delete')
+    def initialize(
+      include_sym: '$include',
+      content_include_sym: '$content_include',
+      schema_sym: '$schema',
+      delete_sym: '$delete'
+    )
+
       @include_sym = include_sym
       @content_include_sym = content_include_sym
       @schema_sym = schema_sym
@@ -25,6 +31,7 @@ module Frise
       class_name
     end
 
+    # rubocop:disable Lint/DuplicateBranch
     def merge_defaults_obj(config, defaults)
       config_class = widened_class(config)
       defaults_class = widened_class(defaults)
@@ -66,6 +73,7 @@ module Frise
         config
       end
     end
+    # rubocop:enable Lint/DuplicateBranch
 
     def merge_defaults_obj_at(config, at_path, defaults)
       at_path.reverse.each { |key| defaults = { key => defaults } }

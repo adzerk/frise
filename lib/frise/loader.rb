@@ -50,7 +50,7 @@ module Frise
     private
 
     def process_includes(config, at_path, root_config, global_vars, include_confs_stack = [])
-      return config unless config.class == Hash
+      return config unless config.instance_of?(Hash)
 
       # process $content_include directives
       config, content_include_confs = extract_content_include(config, at_path)
@@ -73,18 +73,19 @@ module Frise
             else
               Lazy.new do
                 include_conf = include_confs.first
-                rest_include_confs = include_confs[1..-1]
+                rest_include_confs = include_confs[1..]
                 symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
                 included_config = Parser.parse(include_conf['file'], symbol_table)
                 config = @defaults_loader.merge_defaults_obj(config, included_config)
-                process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars, rest_include_confs)
+                process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars,
+                                 rest_include_confs)
               end
             end
       @delete_sym.nil? ? res : omit_deleted(res)
     end
 
     def process_schema_includes(schema, at_path, global_vars)
-      return schema unless schema.class == Hash
+      return schema unless schema.instance_of?(Hash)
 
       schema, included_schemas = extract_include(schema, at_path)
       if included_schemas.empty?
@@ -98,7 +99,7 @@ module Frise
     end
 
     def process_schemas(config, at_path, global_vars)
-      return config unless config.class == Hash
+      return config unless config.instance_of?(Hash)
 
       config = config.map do |k, v|
         new_v = process_schemas(v, at_path + [k], global_vars)
@@ -149,10 +150,10 @@ module Frise
       end
     end
 
-    def extract_special(config, key, at_path)
+    def extract_special(config, key, at_path, &block)
       case config[key]
       when nil then [config, []]
-      when Array then [config.reject { |k| k == key }, config[key].map { |e| yield e }]
+      when Array then [config.reject { |k| k == key }, config[key].map(&block)]
       else raise "At #{build_path(at_path)}: illegal value for #{key}: #{config[key].inspect}"
       end
     end
@@ -182,7 +183,7 @@ module Frise
     #   - `global_vars`: the global variables
     #   - `include_conf`: the $include or $content_include configuration
     def build_symbol_table(root_config, at_path, config, global_vars, include_conf)
-      extra_vars = (include_conf['vars'] || {}).map { |k, v| [k, root_config.dig(*v.split('.'))] }.to_h
+      extra_vars = (include_conf['vars'] || {}).transform_values { |v| root_config.dig(*v.split('.')) }
       extra_consts = include_conf['constants'] || {}
 
       omit_deleted(config ? merge_at(root_config, at_path, config) : root_config)
