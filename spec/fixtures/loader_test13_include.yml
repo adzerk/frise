@@ -1,5 +1,5 @@
 $include:
-  - "{{ _file_dir }}/defaults/loader_test13.yml"
+  - "{{ _file_dir }}/_defaults/loader_test13.yml"
 
 foo: "str2"
 bar: $delete
