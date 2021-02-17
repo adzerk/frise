@@ -14,6 +14,8 @@ module Frise
     attr_reader :errors
 
     def initialize(root, validators = nil)
+      super()
+
       @root = root
       @validators = validators
       @errors = []
@@ -33,7 +35,7 @@ module Frise
 
     def get_full_schema(schema)
       case schema
-      when Hash then
+      when Hash
         default_type = schema[:enum] || schema[:one_of] ? 'Object' : 'Hash'
         { type: default_type }.merge(schema)
       when Symbol then { type: 'Object', validate: schema }
@@ -124,7 +126,7 @@ module Frise
     def validate_remaining_keys(full_schema, obj, path, processed_keys)
       expected_types = get_expected_types(full_schema)
       if expected_types.size == 1 && expected_types[0].ancestors.member?(Enumerable)
-        hash = obj.is_a?(Hash) ? obj : Hash[obj.map.with_index { |x, i| [i, x] }]
+        hash = obj.is_a?(Hash) ? obj : obj.map.with_index { |x, i| [i, x] }.to_h
         hash.each do |key, value|
           validate_object(path, key, full_schema[:all_keys]) if full_schema[:all_keys] && !key.is_a?(Symbol)
 
@@ -156,8 +158,8 @@ module Frise
     def self.parse_symbols(obj)
       case obj
       when Array then obj.map { |e| parse_symbols(e) }
-      when Hash then Hash[obj.map { |k, v| [parse_symbols(k), parse_symbols(v)] }]
-      when String then obj.start_with?('$') ? obj[1..-1].to_sym : obj
+      when Hash then obj.map { |k, v| [parse_symbols(k), parse_symbols(v)] }.to_h
+      when String then obj.start_with?('$') ? obj[1..].to_sym : obj
       else obj
       end
     end
@@ -166,7 +168,17 @@ module Frise
       validate_obj_at(config, [], schema, **options)
     end
 
-    def self.validate_obj_at(config, at_path, schema, path_prefix: nil, validators: nil, print: nil, fatal: nil, raise_error: nil)
+    def self.validate_obj_at(
+      config,
+      at_path,
+      schema,
+      path_prefix: nil,
+      validators: nil,
+      print: nil,
+      fatal: nil,
+      raise_error: nil
+    )
+
       schema = parse_symbols(schema)
       at_path.reverse.each { |key| schema = { key => schema, :allow_unknown_keys => true } }
 
@@ -202,6 +214,8 @@ module Frise
     attr_reader :errors
 
     def initialize(errors)
+      super()
+
       @errors = errors
     end
   end
