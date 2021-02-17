@@ -1,3 +1,8 @@
+### 0.5.0 (TBD)
+
+- Breaking changes
+  - Increase minimum required ruby version to 2.6.0 ([]()).
+
 ### 0.4.1 (July 7, 2020)
 
 - New features
