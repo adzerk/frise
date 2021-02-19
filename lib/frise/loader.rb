@@ -81,7 +81,7 @@ module Frise
                                  rest_include_confs)
               end
             end
-      @delete_sym.nil? ? res : @defaults_loader.clear_deleted_markers(res)
+      @delete_sym.nil? ? res : @defaults_loader.clear_delete_markers(res)
     end
 
     def process_schema_includes(schema, at_path, global_vars)
@@ -175,11 +175,11 @@ module Frise
       extra_vars = (include_conf['vars'] || {}).transform_values { |v| root_config.dig(*v.split('.')) }
       extra_consts = include_conf['constants'] || {}
 
-      @defaults_loader.clear_deleted_markers(config ? merge_at(root_config, at_path, config) : root_config)
-        .merge(global_vars)
-        .merge(extra_vars)
-        .merge(extra_consts)
-        .merge('_this' => config)
+      @defaults_loader.clear_delete_markers(config ? merge_at(root_config, at_path, config) : root_config)
+                      .merge(global_vars)
+                      .merge(extra_vars)
+                      .merge(extra_consts)
+                      .merge('_this' => config)
     end
 
     # builds a user-friendly string indicating a path

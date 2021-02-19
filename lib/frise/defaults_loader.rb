@@ -24,34 +24,27 @@ module Frise
     end
 
     # returns the config without the keys whose values are marked for removal
-    def clear_deleted_markers(config)
-        if config.is_a?(Hash)
-          config.each_with_object({}) do |(k, v), new_hash|
-            if v.instance_of?(Frise::DefaultsLoader::DeleteMarker)
-              new_hash[k] = v.value unless v.value.nil?
-            elsif v != @delete_sym
-              new_hash[k] = clear_deleted_markers(v)
-            end
+    def clear_delete_markers(config)
+      case config
+      when Hash
+        config.each_with_object({}) do |(k, v), new_hash|
+          if v.instance_of?(Frise::DefaultsLoader::DeleteMarker)
+            new_hash[k] = v.value unless v.value.nil?
+          elsif v != @delete_sym
+            new_hash[k] = clear_delete_markers(v)
           end
-        elsif config.is_a?(Array)
-          config.each_with_object([]) do |elem, new_arr|
-            if elem.instance_of?(Frise::DefaultsLoader::DeleteMarker)
-              new_arr.push(elem.value) unless v.value.nil?
-            elsif elem != @delete_sym
-              new_arr.push(clear_deleted_markers(elem))
-            end
-          end
-        else
-          config
         end
-    end
-
-    def widened_class(obj)
-      class_name = obj.class.to_s
-      return 'String' if class_name == 'Hash' && !obj[@content_include_sym].nil?
-      return 'Boolean' if %w[TrueClass FalseClass].include? class_name
-      return 'Integer' if %w[Fixnum Bignum].include? class_name
-      class_name
+      when Array
+        config.each_with_object([]) do |elem, new_arr|
+          if elem.instance_of?(Frise::DefaultsLoader::DeleteMarker)
+            new_arr.push(elem.value) unless elem.value.nil?
+          elsif elem != @delete_sym
+            new_arr.push(clear_delete_markers(elem))
+          end
+        end
+      else
+        config
+      end
     end
 
     # rubocop:disable Lint/DuplicateBranch
@@ -68,7 +61,7 @@ module Frise
         else merge_defaults_obj({}, defaults)
         end
 
-      elsif config == @delete_sym || defaults == @delete_sym || config_class == "Frise::DefaultsLoader::DeleteMarker" || defaults_class == "Frise::DefaultsLoader::DeleteMarker"
+      elsif delete_marker?(config) || delete_marker?(defaults)
         DeleteMarker.new(@delete_sym, config)
 
       elsif defaults_class == 'Array' && config_class == 'Array'
@@ -115,19 +108,32 @@ module Frise
 
     private
 
+    def widened_class(obj)
+      class_name = obj.class.to_s
+      return 'String' if class_name == 'Hash' && !obj[@content_include_sym].nil?
+      return 'Boolean' if %w[TrueClass FalseClass].include? class_name
+      return 'Integer' if %w[Fixnum Bignum].include? class_name
+      class_name
+    end
+
+    def delete_marker?(conf)
+      conf == @delete_sym || conf.instance_of?(Frise::DefaultsLoader::DeleteMarker)
+    end
+
+    # Keeps state once a delete symbol is found, so that we can keep deleting to the "right" while merging values.
     class DeleteMarker
       attr_accessor :value
 
       def initialize(delete_sym, left)
         @delete_sym = delete_sym
 
-        if left === delete_sym
-          @value = nil
-        elsif left.instance_of?(DeleteMarker)
-          @value = left.value
-        else
-          @value = left
-        end
+        @value = if left == delete_sym
+                   nil
+                 elsif left.instance_of?(self.class)
+                   left.value
+                 else
+                   left
+                 end
       end
 
       def to_s
