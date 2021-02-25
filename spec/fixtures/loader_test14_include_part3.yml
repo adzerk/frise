@@ -1,0 +1,6 @@
+my_obj:
+  obj1: $delete
+  obj2:
+    key23: 'key23'
+  obj3:
+    key32: 'key32'

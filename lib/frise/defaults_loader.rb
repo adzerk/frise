@@ -23,14 +23,6 @@ module Frise
       @delete_sym = delete_sym
     end
 
-    def widened_class(obj)
-      class_name = obj.class.to_s
-      return 'String' if class_name == 'Hash' && !obj[@content_include_sym].nil?
-      return 'Boolean' if %w[TrueClass FalseClass].include? class_name
-      return 'Integer' if %w[Fixnum Bignum].include? class_name
-      class_name
-    end
-
     # rubocop:disable Lint/DuplicateBranch
     def merge_defaults_obj(config, defaults)
       config_class = widened_class(config)
@@ -45,7 +37,7 @@ module Frise
         else merge_defaults_obj({}, defaults)
         end
 
-      elsif config == @delete_sym
+      elsif config == @delete_sym || defaults == @delete_sym
         config
 
       elsif defaults_class == 'Array' && config_class == 'Array'
@@ -88,6 +80,16 @@ module Frise
     def merge_defaults_at(config, at_path, defaults_file, symbol_table = config)
       defaults = Parser.parse(defaults_file, symbol_table) || {}
       merge_defaults_obj_at(config, at_path, defaults)
+    end
+
+    private
+
+    def widened_class(obj)
+      class_name = obj.class.to_s
+      return 'String' if class_name == 'Hash' && !obj[@content_include_sym].nil?
+      return 'Boolean' if %w[TrueClass FalseClass].include? class_name
+      return 'Integer' if %w[Fixnum Bignum].include? class_name
+      class_name
     end
   end
 end

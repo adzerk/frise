@@ -3,6 +3,7 @@ int: 3
 bool: true
 bool2: false
 arr: ["elem0", "elem1"]
+another_arr: ["elem0", "elem1"]
 obj:
   key1: "value1"
   key2: "value2"

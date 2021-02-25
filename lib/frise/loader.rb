@@ -76,9 +76,11 @@ module Frise
                 rest_include_confs = include_confs[1..]
                 symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
                 included_config = Parser.parse(include_conf['file'], symbol_table)
-                config = @defaults_loader.merge_defaults_obj(config, included_config)
-                process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars,
-                                 rest_include_confs)
+                processed_included_config = process_includes(included_config, at_path,
+                                                             merge_at(root_config, at_path, included_config),
+                                                             global_vars, rest_include_confs)
+                config = @defaults_loader.merge_defaults_obj(config, processed_included_config)
+                process_includes(config, at_path, merge_at(root_config, at_path, config), global_vars)
               end
             end
       @delete_sym.nil? ? res : omit_deleted(res)
@@ -166,6 +168,7 @@ module Frise
     end
 
     # returns the config without the keys whose values are @delete_sym
+    # @delete_sym given as array elements are not handled.
     def omit_deleted(config)
       config.each_with_object({}) do |(k, v), new_hash|
         if v.is_a?(Hash)

@@ -2,3 +2,5 @@ bar: "str3"
 baz: "str4"
 other: "str5"
 kept_from_default: "str"
+my_array:
+  - "incorrect"

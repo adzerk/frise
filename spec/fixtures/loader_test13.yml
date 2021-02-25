@@ -4,3 +4,5 @@ $include:
 foo: $delete
 bar: "str"
 other: $delete
+my_array:
+  - "correct"

@@ -119,6 +119,7 @@ RSpec.describe DefaultsLoader do
       'int' => '$delete',
       'bool' => '$delete',
       'arr' => '$delete',
+      'another_arr' => ['$delete'], # has no effect inside an array
       'obj' => { 'key1' => '$delete', 'key3' => '$delete' }
     }
     conf = DefaultsLoader.new.merge_defaults(conf, fixture_path('all_types.yml'))
@@ -126,6 +127,7 @@ RSpec.describe DefaultsLoader do
     expect(conf['int']).to eq '$delete'
     expect(conf['bool']).to eq '$delete'
     expect(conf['arr']).to eq '$delete'
+    expect(conf['another_arr']).to eq(%w[elem0 elem1 $delete])
     expect(conf['obj']).to eq(
       'key1' => '$delete',
       'key2' => 'value2',
