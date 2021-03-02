@@ -5,6 +5,7 @@
 - Bug fixes
   - Fix `$delete` directive behavior, allowing it to work across any number of configuration tree levels 
     ([#24](https://github.com/velocidi/frise/pull/24)).
+  - Fix symbol table when processing included files ([#25](https://github.com/velocidi/frise/pull/25)).
 
 ### 0.4.1 (July 7, 2020)
 
