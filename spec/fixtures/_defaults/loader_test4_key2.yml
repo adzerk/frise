@@ -1,1 +1,2 @@
 value2_1: 10
+value2_2: "correct-{{ _this.value2_1 }}"

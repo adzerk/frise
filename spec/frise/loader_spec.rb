@@ -124,7 +124,9 @@ RSpec.describe Loader do
       'key1' => {
         'value1_1' => 1,
         'value1_2' => 'abc',
-        'key2' => { 'value2_1' => 2 }
+        'value1_3' => 'correct',
+        'value1_4' => 1,
+        'key2' => { 'value2_1' => 2, 'value2_2' => 'correct-2' }
       }
     )
   end

@@ -1,4 +1,7 @@
 value1_1: Integer
 value1_2: String
+value1_3: String
+value1_4: Integer
 key2:
   value2_1: Integer
+  value2_2: String
