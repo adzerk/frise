@@ -67,15 +67,16 @@ module Frise
 
       # process $include directives
       config, next_include_confs = extract_include(config, at_path)
-      include_confs = next_include_confs + include_confs_stack
+      include_confs = next_include_confs.map { |include| { _this: config, include: include } } + include_confs_stack
       res = if include_confs.empty?
               config.map { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }.to_h
             else
               Lazy.new do
                 include_conf = include_confs.first
                 rest_include_confs = include_confs[1..]
-                symbol_table = build_symbol_table(root_config, at_path, config, global_vars, include_conf)
-                included_config = Parser.parse(include_conf['file'], symbol_table)
+                symbol_table = build_symbol_table(root_config, at_path, include_conf[:_this], global_vars,
+                                                  include_conf[:include])
+                included_config = Parser.parse(include_conf[:include]['file'], symbol_table)
                 processed_included_config = process_includes(included_config, at_path,
                                                              merge_at(root_config, at_path, included_config),
                                                              global_vars, rest_include_confs)
