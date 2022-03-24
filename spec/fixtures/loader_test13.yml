@@ -1,8 +1,0 @@
-$include:
-  - "{{ _file_dir }}/loader_test13_include.yml"
-
-foo: $delete
-bar: "str"
-other: $delete
-my_array:
-  - "correct"

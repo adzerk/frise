@@ -1,6 +1,0 @@
-my_obj:
-  obj1:
-    key13: 'key13'
-  obj2: $delete
-  obj3:
-    key31: 'key31'
