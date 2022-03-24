@@ -1,0 +1,9 @@
+$include:
+  - "{{ _file_dir }}/loader_test13_include_part1.yml"
+
+foo:
+  a:
+    bar: 1
+  b:
+    bar: 2
+    default: "override"

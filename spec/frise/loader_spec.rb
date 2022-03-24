@@ -265,4 +265,17 @@ RSpec.describe Loader do
       " - At variable1.value2: missing required value\n"
     ).to_stdout.and raise_error(SystemExit)
   end
+
+  it 'should process complex nested includes with templating' do
+    loader = Loader.new(exit_on_fail: false)
+
+    conf = loader.load(fixture_path('loader_test13.yml'))
+    expect(conf).to eq(
+      'foo' => {
+        'a' => { 'bar' => 1, 'default' => 'default', 'id' => 'a', 'baz' => 'specific_to_a' },
+        'b' => { 'bar' => 2, 'default' => 'override', 'id' => 'b' },
+        'c' => { 'bar' => 3, 'default' => 'default', 'id' => 'c' }
+      }
+    )
+  end
 end
