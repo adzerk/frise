@@ -112,11 +112,11 @@ RSpec.describe Validator do
   it 'should allow custom validations in schemas' do
     validators = Object.new
     def validators.even_int(_, n)
-      n.is_a?(Integer) && (n % 2).zero? || (raise "expected an even number, found #{n}")
+      (n.is_a?(Integer) && (n % 2).zero?) || (raise "expected an even number, found #{n}")
     end
 
     def validators.length_len(root, str)
-      str.is_a?(String) && str.size == root['len'] ||
+      (str.is_a?(String) && str.size == root['len']) ||
         (raise "expected a string of length #{root['len']}, found #{str.inspect}")
     end
 
@@ -162,7 +162,7 @@ RSpec.describe Validator do
   it 'should allow validations on all keys of an object' do
     validators = Object.new
     def validators.short_string(_, str)
-      str.is_a?(String) && str.length < 5 || (raise "expected a short key, found #{str.inspect}")
+      (str.is_a?(String) && str.length < 5) || (raise "expected a short key, found #{str.inspect}")
     end
 
     schema = { 'obj' => { '$all_keys' => '$short_string', '$all' => 'String' } }
@@ -217,7 +217,7 @@ RSpec.describe Validator do
   it 'should be able to use complex schemas in their full form' do
     validators = Object.new
     def validators.short_string(_, str)
-      str.is_a?(String) && str.length < 5 || (raise "expected a short string, found #{str.inspect}")
+      (str.is_a?(String) && str.length < 5) || (raise "expected a short string, found #{str.inspect}")
     end
 
     schema = {

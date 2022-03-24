@@ -34,7 +34,8 @@ module Frise
       elsif config.nil?
         if defaults_class != 'Hash' then defaults
         elsif defaults['$optional'] then nil
-        else merge_defaults_obj({}, defaults)
+        else
+          merge_defaults_obj({}, defaults)
         end
 
       elsif config == @delete_sym || defaults == @delete_sym
@@ -59,7 +60,7 @@ module Frise
 
       elsif defaults_class != config_class
         raise "Cannot merge config #{config.inspect} (#{widened_class(config)}) " \
-          "with default #{defaults.inspect} (#{widened_class(defaults)})"
+              "with default #{defaults.inspect} (#{widened_class(defaults)})"
 
       else
         config

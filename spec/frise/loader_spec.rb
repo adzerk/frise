@@ -6,7 +6,7 @@ include Frise
 
 validators = Object.new
 def validators.short_string(_, str)
-  str.is_a?(String) && str.length < 5 || (raise "expected a short string, found #{str.inspect}")
+  (str.is_a?(String) && str.length < 5) || (raise "expected a short string, found #{str.inspect}")
 end
 
 RSpec.describe Loader do
@@ -42,7 +42,7 @@ RSpec.describe Loader do
   end
 
   it 'should allow providing actions to be run just before loading defaults and schemas' do
-    on_load = ->(conf) { conf.map { |k, v| ["prefix_#{k}", v] }.to_h }
+    on_load = ->(conf) { conf.transform_keys { |k| "prefix_#{k}" } }
 
     loader = Loader.new(pre_loaders: [on_load], exit_on_fail: false)
 
