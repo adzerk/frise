@@ -10,7 +10,7 @@ module Frise
     class << self
       def parse(file, symbol_table = nil)
         return nil unless File.file? file
-        YAML.safe_load(parse_as_text(file, symbol_table), [], [], true) || {}
+        YAML.safe_load(parse_as_text(file, symbol_table), aliases: true) || {}
       end
 
       def parse_as_text(file, symbol_table = nil)
