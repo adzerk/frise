@@ -6,6 +6,7 @@
   - Fix `$delete` directive behavior, allowing it to work across any number of configuration tree levels 
     ([#24](https://github.com/velocidi/frise/pull/24)).
   - Fix symbol table when processing included files ([#25](https://github.com/velocidi/frise/pull/25)).
+  - Fix YAML.safe_load call arguments error in ruby 3.1 ([#25](https://github.com/velocidi/frise/pull/26)).
 
 ### 0.4.1 (July 7, 2020)
 

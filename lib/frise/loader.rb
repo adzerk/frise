@@ -69,7 +69,7 @@ module Frise
       config, next_include_confs = extract_include(config, at_path)
       include_confs = next_include_confs.map { |include| { _this: config, include: include } } + include_confs_stack
       res = if include_confs.empty?
-              config.map { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }.to_h
+              config.to_h { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }
             else
               Lazy.new do
                 include_conf = include_confs.first
@@ -92,7 +92,7 @@ module Frise
 
       schema, included_schemas = extract_include(schema, at_path)
       if included_schemas.empty?
-        schema.map { |k, v| [k, process_schema_includes(v, at_path + [k], global_vars)] }.to_h
+        schema.to_h { |k, v| [k, process_schema_includes(v, at_path + [k], global_vars)] }
       else
         included_schemas.each do |defaults_conf|
           schema = Parser.parse(defaults_conf['file'], global_vars).merge(schema)
@@ -104,11 +104,11 @@ module Frise
     def process_schemas(config, at_path, global_vars)
       return config unless config.instance_of?(Hash)
 
-      config = config.map do |k, v|
+      config = config.to_h do |k, v|
         new_v = process_schemas(v, at_path + [k], global_vars)
         return nil if !v.nil? && new_v.nil?
         [k, new_v]
-      end.to_h
+      end
 
       config, schema_files = extract_schema(config, at_path)
       schema_files.each do |schema_file|

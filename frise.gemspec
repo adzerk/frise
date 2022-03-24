@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop', '~> 1.10'
   spec.add_development_dependency 'simplecov', '~> 0.18'
   spec.add_development_dependency 'simplecov-lcov', '0.8.0'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end

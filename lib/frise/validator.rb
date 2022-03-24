@@ -95,7 +95,7 @@ module Frise
     def validate_enum(full_schema, obj, path)
       if full_schema[:enum] && !full_schema[:enum].include?(obj)
         add_validation_error(path, "invalid value #{obj.inspect}. " \
-          "Accepted values are #{full_schema[:enum].map(&:inspect).join(', ')}")
+                                   "Accepted values are #{full_schema[:enum].map(&:inspect).join(', ')}")
         return false
       end
       true
@@ -158,7 +158,7 @@ module Frise
     def self.parse_symbols(obj)
       case obj
       when Array then obj.map { |e| parse_symbols(e) }
-      when Hash then obj.map { |k, v| [parse_symbols(k), parse_symbols(v)] }.to_h
+      when Hash then obj.to_h { |k, v| [parse_symbols(k), parse_symbols(v)] }
       when String then obj.start_with?('$') ? obj[1..].to_sym : obj
       else obj
       end
