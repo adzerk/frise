@@ -23,6 +23,30 @@ module Frise
       @delete_sym = delete_sym
     end
 
+    # returns the config without the keys whose values are marked for removal
+    def clear_delete_markers(config)
+      case config
+      when Hash
+        config.each_with_object({}) do |(k, v), new_hash|
+          if v.instance_of?(Frise::DefaultsLoader::DeleteMarker)
+            new_hash[k] = v.value unless v.value.nil?
+          elsif v != @delete_sym
+            new_hash[k] = clear_delete_markers(v)
+          end
+        end
+      when Array
+        config.each_with_object([]) do |elem, new_arr|
+          if elem.instance_of?(Frise::DefaultsLoader::DeleteMarker)
+            new_arr.push(elem.value) unless elem.value.nil?
+          elsif elem != @delete_sym
+            new_arr.push(clear_delete_markers(elem))
+          end
+        end
+      else
+        config
+      end
+    end
+
     # rubocop:disable Lint/DuplicateBranch
     def merge_defaults_obj(config, defaults)
       config_class = widened_class(config)
@@ -38,8 +62,8 @@ module Frise
           merge_defaults_obj({}, defaults)
         end
 
-      elsif config == @delete_sym
-        config
+      elsif delete_marker?(config) || delete_marker?(defaults)
+        DeleteMarker.new(@delete_sym, config)
 
       elsif defaults_class == 'Array' && config_class == 'Array'
         defaults + config
@@ -91,6 +115,27 @@ module Frise
       return 'Boolean' if %w[TrueClass FalseClass].include? class_name
       return 'Integer' if %w[Fixnum Bignum].include? class_name
       class_name
+    end
+
+    def delete_marker?(conf)
+      conf == @delete_sym || conf.instance_of?(Frise::DefaultsLoader::DeleteMarker)
+    end
+
+    # A marker for deletion of sub-trees
+    class DeleteMarker
+      attr_accessor :value
+
+      def initialize(delete_sym, left)
+        @delete_sym = delete_sym
+
+        @value = if left == delete_sym
+                   nil
+                 elsif left.instance_of?(self.class)
+                   left.value
+                 else
+                   left
+                 end
+      end
     end
   end
 end

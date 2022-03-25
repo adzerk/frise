@@ -266,10 +266,37 @@ RSpec.describe Loader do
     ).to_stdout.and raise_error(SystemExit)
   end
 
-  it 'should process complex nested includes with templating' do
+  it 'should delete sub-tree when value is $delete' do
     loader = Loader.new(exit_on_fail: false)
 
     conf = loader.load(fixture_path('loader_test13.yml'))
+    expect(conf).to eq(
+      'bar' => 'str',
+      'kept_from_default' => 'str',
+      'my_array' => ['correct']
+    )
+  end
+
+  it 'should provide consistent $delete results according to inclusion order' do
+    loader = Loader.new(exit_on_fail: false)
+
+    conf = loader.load(fixture_path('loader_test14_1.yml'))
+    expect(conf).to eq({ 'my_obj' => {
+                         'obj1' => { 'key11' => 'key11', 'key12' => 'key12', 'key13' => 'key13' },
+                         'obj2' => { 'key21' => 'key21', 'key22' => 'key22' }
+                       } })
+
+    conf = loader.load(fixture_path('loader_test14_2.yml'))
+    expect(conf).to eq({ 'my_obj' => {
+                         'obj2' => { 'key23' => 'key23' },
+                         'obj3' => { 'key31' => 'key31', 'key32' => 'key32' }
+                       } })
+  end
+
+  it 'should process complex nested includes with templating' do
+    loader = Loader.new(exit_on_fail: false)
+
+    conf = loader.load(fixture_path('loader_test15.yml'))
     expect(conf).to eq(
       'foo' => {
         'a' => { 'bar' => 1, 'default' => 'default', 'id' => 'a', 'baz' => 'specific_to_a' },

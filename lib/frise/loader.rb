@@ -81,7 +81,7 @@ module Frise
                                  rest_include_confs)
               end
             end
-      @delete_sym.nil? ? res : omit_deleted(res)
+      @delete_sym.nil? ? res : @defaults_loader.clear_delete_markers(res)
     end
 
     def process_schema_includes(schema, at_path, global_vars)
@@ -165,18 +165,6 @@ module Frise
       config.merge(head => merge_at(config[head], tail, to_merge))
     end
 
-    # returns the config without the keys whose values are @delete_sym
-    # @delete_sym given as array elements are not handled.
-    def omit_deleted(config)
-      config.each_with_object({}) do |(k, v), new_hash|
-        if v.is_a?(Hash)
-          new_hash[k] = omit_deleted(v)
-        else
-          new_hash[k] = v unless v == @delete_sym
-        end
-      end
-    end
-
     # builds the symbol table for the Liquid renderization of a file, based on:
     #   - `root_config`: the root of the whole config
     #   - `at_path`: the current path
@@ -187,11 +175,11 @@ module Frise
       extra_vars = (include_conf['vars'] || {}).transform_values { |v| root_config.dig(*v.split('.')) }
       extra_consts = include_conf['constants'] || {}
 
-      omit_deleted(config ? merge_at(root_config, at_path, config) : root_config)
-        .merge(global_vars)
-        .merge(extra_vars)
-        .merge(extra_consts)
-        .merge('_this' => config)
+      @defaults_loader.clear_delete_markers(config ? merge_at(root_config, at_path, config) : root_config)
+                      .merge(global_vars)
+                      .merge(extra_vars)
+                      .merge(extra_consts)
+                      .merge('_this' => config)
     end
 
     # builds a user-friendly string indicating a path
