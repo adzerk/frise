@@ -123,13 +123,24 @@ RSpec.describe DefaultsLoader do
       'obj' => { 'key1' => '$delete', 'key3' => '$delete' }
     }
     loader = DefaultsLoader.new
-    conf = loader.clear_delete_markers(loader.merge_defaults(conf, fixture_path('all_types.yml')))
-    expect(conf.key?('str')).to be false
-    expect(conf.key?('int')).to be false
-    expect(conf.key?('bool')).to be false
-    expect(conf.key?('arr')).to be false
-    expect(conf['another_arr']).to eq(%w[elem0 elem1])
+    conf = loader.merge_defaults(conf, fixture_path('all_types.yml'))
+    expect(conf['str']).to eq '$delete'
+    expect(conf['int']).to eq '$delete'
+    expect(conf['bool']).to eq '$delete'
+    expect(conf['arr']).to eq '$delete'
     expect(conf['obj']).to eq(
+      'key1' => '$delete',
+      'key2' => 'value2',
+      'key3' => '$delete'
+    )
+
+    cleared_conf = loader.clear_delete_markers(conf)
+    expect(cleared_conf.key?('str')).to be false
+    expect(cleared_conf.key?('int')).to be false
+    expect(cleared_conf.key?('bool')).to be false
+    expect(cleared_conf.key?('arr')).to be false
+    expect(cleared_conf['another_arr']).to eq(%w[elem0 elem1])
+    expect(cleared_conf['obj']).to eq(
       'key2' => 'value2'
     )
   end
