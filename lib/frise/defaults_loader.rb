@@ -3,11 +3,49 @@
 require 'frise/parser'
 
 module Frise
+  # Refinements for existing classes useful in the scope of this file
+  module FriseRefinements
+    # rubocop:disable Naming/PredicateName
+    # rubocop:disable Naming/AccessorMethodName
+    # extensions to help merge configurations with delete markers
+    refine BasicObject do
+      attr_accessor :delete_marker_value
+
+      def is_frise_delete_marker?(sym)
+        self == sym || has_frise_delete_marker_value?
+      end
+
+      def has_frise_delete_marker_value?
+        !@delete_marker_value.nil?
+      end
+
+      def set_frise_delete_marker(sym)
+        if frozen?
+          dup.set_frise_delete_marker(sym)
+        else
+          @delete_marker_value =
+            if self == sym
+              nil
+            elsif has_frise_delete_marker_value?
+              @delete_marker_value
+            else
+              self
+            end
+
+          self
+        end
+      end
+    end
+    # rubocop:enable Naming/PredicateName
+    # rubocop:enable Naming/AccessorMethodName
+  end
+
   # Provides the logic for merging config defaults into pre-loaded configuration objects.
   #
   # The merge_defaults and merge_defaults_at entrypoint methods provide ways to read files with
   # defaults and apply them to configuration objects.
   class DefaultsLoader
+    using FriseRefinements
     SYMBOLS = %w[$all $optional].freeze
 
     def initialize(
@@ -118,37 +156,3 @@ module Frise
     end
   end
 end
-
-# extensions to help merge configurations with delete markers
-# rubocop:disable Naming/PredicateName
-# rubocop:disable Naming/AccessorMethodName
-class BasicObject
-  attr_accessor :delete_marker_value
-
-  def is_frise_delete_marker?(sym)
-    self == sym || has_frise_delete_marker_value?
-  end
-
-  def has_frise_delete_marker_value?
-    !@delete_marker_value.nil?
-  end
-
-  def set_frise_delete_marker(sym)
-    if frozen?
-      dup.set_frise_delete_marker(sym)
-    else
-      @delete_marker_value =
-        if self == sym
-          nil
-        elsif has_frise_delete_marker_value?
-          delete_marker_value
-        else
-          self
-        end
-
-      self
-    end
-  end
-end
-# rubocop:enable Naming/PredicateName
-# rubocop:enable Naming/AccessorMethodName
