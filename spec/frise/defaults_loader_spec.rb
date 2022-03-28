@@ -128,6 +128,7 @@ RSpec.describe DefaultsLoader do
     expect(conf['int']).to eq '$delete'
     expect(conf['bool']).to eq '$delete'
     expect(conf['arr']).to eq '$delete'
+    expect(conf['another_arr']).to eq(%w[elem0 elem1 $delete]) # has no effect inside an array
     expect(conf['obj']).to eq(
       'key1' => '$delete',
       'key2' => 'value2',
@@ -139,7 +140,7 @@ RSpec.describe DefaultsLoader do
     expect(cleared_conf.key?('int')).to be false
     expect(cleared_conf.key?('bool')).to be false
     expect(cleared_conf.key?('arr')).to be false
-    expect(cleared_conf['another_arr']).to eq(%w[elem0 elem1])
+    expect(cleared_conf['another_arr']).to eq(%w[elem0 elem1 $delete]) # has no effect inside an array
     expect(cleared_conf['obj']).to eq(
       'key2' => 'value2'
     )

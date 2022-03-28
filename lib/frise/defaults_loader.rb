@@ -76,8 +76,10 @@ module Frise
         config.each_with_object([]) do |elem, new_arr|
           if elem.has_frise_delete_marker_value?
             new_arr.push(elem.value)
-          elsif !elem.is_frise_delete_marker?(@delete_sym)
-            new_arr.push(clear_delete_markers(elem))
+          elsif elem.is_frise_delete_marker?(@delete_sym)
+            new_arr.push(@delete_sym)
+          else
+            new_arr.push(elem)
           end
         end
       else
