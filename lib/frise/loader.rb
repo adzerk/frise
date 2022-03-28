@@ -67,7 +67,7 @@ module Frise
 
       # process $include directives
       config, next_include_confs = extract_include(config, at_path)
-      include_confs = next_include_confs + include_confs_stack
+      include_confs = next_include_confs.filter { |inc| !File.size?(inc['file']).nil? } + include_confs_stack
       res = if include_confs.empty?
               config.to_h { |k, v| [k, process_includes(v, at_path + [k], root_config, global_vars)] }
             else
