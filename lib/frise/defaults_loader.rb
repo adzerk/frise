@@ -38,7 +38,7 @@ module Frise
           merge_defaults_obj({}, defaults)
         end
 
-      elsif config == @delete_sym || defaults == @delete_sym
+      elsif config == @delete_sym
         config
 
       elsif defaults_class == 'Array' && config_class == 'Array'

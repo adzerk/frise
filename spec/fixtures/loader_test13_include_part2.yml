@@ -1,0 +1,9 @@
+foo:
+  {% for _foo in foo %}
+  {{ _foo[0] }}:
+    $include:
+      - file: '{{ _file_dir }}/loader_test13_include_{{ _foo[0] }}.yml'
+        constants: { _this_id: '{{ _foo[0] }}' }
+      - file: '{{ _file_dir }}/loader_test13_include_part3.yml'
+        constants: { _this_id: '{{ _foo[0] }}' }
+  {% endfor %}

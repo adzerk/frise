@@ -1,4 +1,0 @@
-$include:
-  - "{{ _file_dir }}/loader_test14_include_part1.yml"
-  - "{{ _file_dir }}/loader_test14_include_part2.yml"
-  - "{{ _file_dir }}/loader_test14_include_part3.yml"

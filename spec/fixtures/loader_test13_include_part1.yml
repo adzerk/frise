@@ -1,0 +1,6 @@
+$include:
+  - "{{ _file_dir }}/loader_test13_include_part2.yml"
+
+foo:
+  c:
+    bar: 3
