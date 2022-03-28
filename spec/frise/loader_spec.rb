@@ -301,7 +301,8 @@ RSpec.describe Loader do
       'foo' => {
         'a' => { 'bar' => 1, 'default' => 'default', 'id' => 'a', 'baz' => 'specific_to_a' },
         'b' => { 'bar' => 2, 'default' => 'override', 'id' => 'b' },
-        'c' => { 'bar' => 3, 'default' => 'default', 'id' => 'c' }
+        'c' => { 'bar' => 3, 'default' => 'default', 'id' => 'c' },
+        'd' => { 'some_array' => [1, '$delete', 3] }
       }
     )
   end

@@ -1,5 +1,6 @@
 $include:
   - "{{ _file_dir }}/loader_test15_include_part2.yml"
+  - "{{ _file_dir }}/loader_test15_include_part4.yml"
 
 foo:
   c:

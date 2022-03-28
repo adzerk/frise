@@ -1,0 +1,12 @@
+$include:
+  - "{{ _file_dir }}/loader_test15_include_part5.yml"
+
+foo:
+  d:
+    some_array:
+      - 1
+      - $delete
+      - 3
+  $include:
+    # part5 above has a $delete for the array, so the initial definition in this file won't change
+    - "{{ _file_dir }}/loader_test15_include_part6.yml"

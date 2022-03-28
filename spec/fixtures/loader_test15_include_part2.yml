@@ -6,4 +6,4 @@ foo:
         constants: { _this_id: '{{ _foo[0] }}' }
       - file: '{{ _file_dir }}/loader_test15_include_part3.yml'
         constants: { _this_id: '{{ _foo[0] }}' }
-    {% endfor %}
+  {% endfor %}
