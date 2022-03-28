@@ -1,4 +1,4 @@
-### 0.5.0 (TBD)
+### 0.5.1 (March 28, 2022)
 
 - Breaking changes
   - Increase minimum required ruby version to 2.6.0 ([#22](https://github.com/velocidi/frise/pull/22)).
