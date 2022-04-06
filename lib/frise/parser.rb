@@ -16,7 +16,12 @@ module Frise
       def parse_as_text(file, symbol_table = nil)
         return nil unless File.file? file
         content = File.read(file)
-        content = Liquid::Template.parse(content).render with_internal_vars(file, symbol_table) if symbol_table
+        template = Liquid::Template.parse(content, error_mode: :strict)
+        if symbol_table
+          content = template.render!(with_internal_vars(file, symbol_table), {
+                                       strict_filters: true
+                                     })
+        end
         content
       end
 
