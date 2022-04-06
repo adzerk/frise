@@ -2,4 +2,4 @@ str: "{{ var1 | downcase }}"
 int: {{ var2 }}
 bool: {% if var2 < 5 %}true{% else %}false{% endif %}
 json: {{ var3 | json }}
-json_string: "{{ var3 | json_string }}"
+json_string: "{{ var3 | json | replace: '\', '\\' | replace: '"', '\"' }}"

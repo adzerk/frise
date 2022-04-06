@@ -5,7 +5,7 @@
   - Update liquid gem to `5.3.0` ([#29](https://github.com/velocidi/frise/pull/29)).
 
 - New features
-  - Add `json` and `json_string` liquid filters ([#28](https://github.com/velocidi/frise/pull/28)).
+  - Add `json` liquid filter ([#28](https://github.com/velocidi/frise/pull/28)).
  
 ### 0.5.1 (March 28, 2022)
 
