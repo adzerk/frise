@@ -1,0 +1,1 @@
+a: {{ var2 && var3 }} # should be a "AND"

@@ -1,0 +1,1 @@
+a: {{ var1 | invalid_filter }} # invalid_filter does not exist
