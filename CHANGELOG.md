@@ -1,3 +1,8 @@
+### 0.5.2 (TBD)
+
+- New features
+  - Add `json` and `json_string` liquid filters ([#28](https://github.com/velocidi/frise/pull/28)).
+
 ### 0.5.1 (March 28, 2022)
 
 - Breaking changes
