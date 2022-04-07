@@ -1,4 +1,4 @@
-### 0.6.0 (TBD)
+### 0.6.0 (April 7, 2022)
 
 - Breaking changes
   - Liquid parsing is now strict ([#29](https://github.com/velocidi/frise/pull/29)).
