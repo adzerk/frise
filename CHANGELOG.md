@@ -6,7 +6,7 @@
 
 - New features
   - Add `json` liquid filter ([#28](https://github.com/velocidi/frise/pull/28)).
- 
+
 ### 0.5.1 (March 28, 2022)
 
 - Breaking changes
