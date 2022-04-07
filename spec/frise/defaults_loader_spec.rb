@@ -30,8 +30,19 @@ RSpec.describe DefaultsLoader do
     conf = { 'a' => 45, 'str' => 'bcd' }
     conf = DefaultsLoader.new.merge_defaults(conf,
                                              fixture_path('simple_liquid.yml'),
-                                             'var1' => 'REPLACED', 'var2' => 1)
-    expect(conf).to eq('a' => 45, 'str' => 'bcd', 'int' => 1, 'bool' => true)
+                                             'var1' => 'REPLACED',
+                                             'var2' => 1,
+                                             'var3' => {
+                                               'foo' => 'bar'
+                                             })
+    expect(conf).to eq('a' => 45,
+                       'str' => 'bcd',
+                       'int' => 1,
+                       'bool' => true,
+                       'json' => {
+                         'foo' => 'bar'
+                       },
+                       'json_string' => '{"foo":"bar"}')
   end
 
   it 'should interpret the $all key in a default hash or array' do
