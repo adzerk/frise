@@ -8,3 +8,5 @@ Naming/BlockParameterName:
   Enabled: false
 Naming/MethodParameterName:
   Enabled: false
+Style/ClassVars:
+  Enabled: false

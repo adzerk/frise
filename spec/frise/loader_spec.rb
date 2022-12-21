@@ -60,8 +60,8 @@ RSpec.describe Loader do
     loader = Loader.new(validators: validators, exit_on_fail: true)
 
     expect { loader.load(fixture_path('loader_test1_schema.yml')) }.to output(
-      "1 config error(s) found:\n" \
-      " - At int: missing required value\n"
+      "1 config error(s) found:\n " \
+      "- At int: missing required value\n"
     ).to_stdout.and raise_error(SystemExit)
   end
 
@@ -261,8 +261,8 @@ RSpec.describe Loader do
   it 'should validate schemas included deeper in the config file hierarchy' do
     loader = Loader.new(exit_on_fail: true)
     expect { loader.load(fixture_path('loader_test12.yml')) }.to output(
-      "1 config error(s) found:\n" \
-      " - At variable1.value2: missing required value\n"
+      "1 config error(s) found:\n " \
+      "- At variable1.value2: missing required value\n"
     ).to_stdout.and raise_error(SystemExit)
   end
 

@@ -8,6 +8,9 @@ module Frise
   # transformations.
   module Parser
     class << self
+      # Cache holding the parsed liquid templates
+      @@template_cache = {}
+
       def parse(file, symbol_table = nil)
         return nil unless File.file? file
         YAML.safe_load(parse_as_text(file, symbol_table), aliases: true) || {}
@@ -15,8 +18,15 @@ module Frise
 
       def parse_as_text(file, symbol_table = nil)
         return nil unless File.file? file
-        content = File.read(file)
-        template = Liquid::Template.parse(content, error_mode: :strict)
+
+        if @@template_cache.key?(file)
+          template = @@template_cache[file]
+        else
+          content = File.read(file)
+          template = Liquid::Template.parse(content, error_mode: :strict)
+          @@template_cache[file] = template
+        end
+
         if symbol_table
           content = template.render!(with_internal_vars(file, symbol_table), {
                                        strict_filters: true

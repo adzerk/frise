@@ -301,8 +301,8 @@ RSpec.describe Validator do
     schema = { 'obj' => { 'k0' => 'String' } }
     conf = { 'obj' => { 'k0' => 1 } }
     expect { validate(conf, schema, print: true) }.to output(
-      "1 config error(s) found:\n" \
-      " - At obj.k0: expected String, found Integer\n"
+      "1 config error(s) found:\n " \
+      "- At obj.k0: expected String, found Integer\n"
     ).to_stdout
   end
 
