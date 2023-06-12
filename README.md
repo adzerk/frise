@@ -1,5 +1,5 @@
 # Frise
-[![Build Status](https://travis-ci.org/velocidi/frise.svg?branch=master)](https://travis-ci.org/velocidi/frise)
+[![Build Status](https://github.com/adzerk/frise/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/adzerk/frise/actions/workflows/CI.yml)
 [![Coverage Status](https://coveralls.io/repos/github/velocidi/frise/badge.svg?branch=master)](https://coveralls.io/github/velocidi/frise?branch=master)
 [![Gem Version](https://badge.fury.io/rb/frise.svg)](https://badge.fury.io/rb/frise)
 
