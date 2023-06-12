@@ -1,6 +1,6 @@
 # Frise
 [![Build Status](https://github.com/adzerk/frise/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/adzerk/frise/actions/workflows/CI.yml)
-[![Coverage Status](https://coveralls.io/repos/github/velocidi/frise/badge.svg?branch=master)](https://coveralls.io/github/velocidi/frise?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/adzerk/frise/badge.svg?branch=master)](https://coveralls.io/github/adzerk/frise?branch=master)
 [![Gem Version](https://badge.fury.io/rb/frise.svg)](https://badge.fury.io/rb/frise)
 
 Frise is a library for loading configuration files as native Ruby structures. Besides reading and
