@@ -30,7 +30,6 @@ jobs:
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.github_token }}
           flag-name: ${{ matrix.ruby }}
           parallel: true
 
@@ -41,5 +40,5 @@ jobs:
       - name: Coveralls Finished
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.github_token }}
           parallel-finished: true
+          carryforward: "2.6,2.7,3.0,3.1,3.2"
