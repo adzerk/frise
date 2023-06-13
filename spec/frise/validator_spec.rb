@@ -214,6 +214,62 @@ RSpec.describe Validator do
     expect(errors).to eq ['At key: {"c"=>"abc"} does not match any of the possible schemas']
   end
 
+  it 'should validate correctly $constant schemas' do
+    schema = { 'key' => { '$constant' => 42 } }
+
+    conf = { 'key' => 42 }
+    errors = validate(conf, schema)
+    expect(errors).to eq []
+
+    conf = { 'key' => 43 }
+    errors = validate(conf, schema)
+    expect(errors).to eq ['At key: invalid value 43. The only accepted value is 42']
+  end
+
+  it 'should make $constant schemas force values to be present' do
+    schema = { 'key' => { '$constant' => 42 }, '$allow_unknown_keys' => true }
+
+    conf = { 'other_key' => 42 }
+    errors = validate(conf, schema)
+    expect(errors).to eq ['At key: missing required value']
+  end
+
+  it 'should allow objects in $constant schemas' do
+    schema = { 'key' => { '$constant' => { 'a' => 1, 'b' => 2 } } }
+
+    conf = { 'key' => { 'b' => 2, 'a' => 1 } }
+    errors = validate(conf, schema)
+    expect(errors).to eq []
+
+    conf = { 'key' => { 'a' => 2, 'b' => 2 } }
+    errors = validate(conf, schema)
+    expect(errors).to eq ['At key: invalid value {"a"=>2, "b"=>2}. The only accepted value is {"a"=>1, "b"=>2}']
+  end
+
+  it 'should allow false values in $constant schemas' do
+    schema = { 'key' => { '$constant' => false } }
+
+    conf = { 'key' => false }
+    errors = validate(conf, schema)
+    expect(errors).to eq []
+
+    conf = { 'key' => true }
+    errors = validate(conf, schema)
+    expect(errors).to eq ['At key: invalid value true. The only accepted value is false']
+  end
+
+  it 'should allow falsey values in $constant schemas' do
+    schema = { 'key1' => { '$constant' => 0 }, 'key2' => { '$constant' => '' } }
+
+    conf = { 'key1' => 0, 'key2' => '' }
+    errors = validate(conf, schema)
+    expect(errors).to eq []
+
+    conf = { 'key1' => 1, 'key2' => '' }
+    errors = validate(conf, schema)
+    expect(errors).to eq ['At key1: invalid value 1. The only accepted value is 0']
+  end
+
   it 'should be able to use complex schemas in their full form' do
     validators = Object.new
     def validators.short_string(_, str)

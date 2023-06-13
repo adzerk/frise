@@ -36,7 +36,7 @@ module Frise
     def get_full_schema(schema)
       case schema
       when Hash
-        default_type = schema[:enum] || schema[:one_of] ? 'Object' : 'Hash'
+        default_type = schema[:enum] || schema[:one_of] || schema.key?(:constant) ? 'Object' : 'Hash'
         { type: default_type }.merge(schema)
       when Symbol then { type: 'Object', validate: schema }
       when Array
@@ -114,6 +114,14 @@ module Frise
       true
     end
 
+    def validate_constant(full_schema, obj, path)
+      if full_schema.key?(:constant) && full_schema[:constant] != obj
+        add_validation_error(path, "invalid value #{obj.inspect}. " \
+                                   "The only accepted value is #{full_schema[:constant]}")
+      end
+      true
+    end
+
     def validate_spec_keys(full_schema, obj, path, processed_keys)
       full_schema.each do |spec_key, spec_value|
         next if spec_key.is_a?(Symbol)
@@ -149,6 +157,7 @@ module Frise
       return unless validate_custom(full_schema, obj, path)
       return unless validate_enum(full_schema, obj, path)
       return unless validate_one_of(full_schema, obj, path)
+      return unless validate_constant(full_schema, obj, path)
 
       processed_keys = Set.new
       return unless validate_spec_keys(full_schema, obj, path, processed_keys)

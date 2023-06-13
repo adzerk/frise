@@ -1,3 +1,9 @@
+### 0.6.1 (TBD)
+
+- New features
+  - New schema type `$constant` for specifying values with a single possible instance
+    ([#32](https://github.com/adzerk/frise/pull/32)).
+
 ### 0.6.0 (April 7, 2022)
 
 - Breaking changes
