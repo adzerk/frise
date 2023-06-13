@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    frise (0.6.1.pre)
+    frise (0.6.2.pre)
       liquid (~> 5.3.0)
 
 GEM
