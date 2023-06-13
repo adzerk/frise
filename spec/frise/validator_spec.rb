@@ -229,7 +229,7 @@ RSpec.describe Validator do
   it 'should make $constant schemas force values to be present' do
     schema = { 'key' => { '$constant' => 42 }, '$allow_unknown_keys' => true }
 
-    conf = { 'key1' => 42 }
+    conf = { 'other_key' => 42 }
     errors = validate(conf, schema)
     expect(errors).to eq ['At key: missing required value']
   end
