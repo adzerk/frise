@@ -1,4 +1,4 @@
-### 0.6.1 (TBD)
+### 0.6.1 (June 13, 2023)
 
 - New features
   - New schema type `$constant` for specifying values with a single possible instance
