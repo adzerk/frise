@@ -4,12 +4,12 @@ Please also include relevant motivation and context;
 Consider describing the type of change - If it's a new feature, a bug fix, a refactor, etc.
 -->
 
-### Does this change relate to existing features and pull requests?
+### Does this change relate to existing features or pull requests?
 
 <!--
-Include links to stories that should be fixed with this change or that are related to this change.
+Include links to issues that should be fixed with this change or that are related to this change.
 If this change depends on existing pull requests, also include a link to them here.
-If this change needs a follow up, describe what still needs to be done, including links to already opened stories or pull requests.
+If this change needs a follow up, describe what still needs to be done, including links to already opened issues or pull requests.
 -->
 
 ### Does this change require an update to the documentation?
