@@ -211,7 +211,7 @@ RSpec.describe Validator do
 
     conf = { 'key' => { 'c' => 'abc' } }
     errors = validate(conf, schema)
-    expect(errors).to eq ['At key: {"c"=>"abc"} does not match any of the possible schemas']
+    expect(errors).to eq ["At key: #{{ 'c' => 'abc' }.inspect} does not match any of the possible schemas"]
   end
 
   it 'should validate correctly $constant schemas' do
@@ -243,7 +243,8 @@ RSpec.describe Validator do
 
     conf = { 'key' => { 'a' => 2, 'b' => 2 } }
     errors = validate(conf, schema)
-    expect(errors).to eq ['At key: invalid value {"a"=>2, "b"=>2}. The only accepted value is {"a"=>1, "b"=>2}']
+    expect(errors).to eq ["At key: invalid value #{{ 'a' => 2, 'b' => 2 }.inspect}. " \
+                          "The only accepted value is #{{ 'a' => 1, 'b' => 2 }.inspect}"]
   end
 
   it 'should allow false values in $constant schemas' do
@@ -357,8 +358,8 @@ RSpec.describe Validator do
     schema = { 'obj' => { 'k0' => 'String' } }
     conf = { 'obj' => { 'k0' => 1 } }
     expect { validate(conf, schema, print: true) }.to output(
-      "1 config error(s) found:\n" \
-      " - At obj.k0: expected String, found Integer\n"
+      "1 config error(s) found:\n " \
+      "- At obj.k0: expected String, found Integer\n"
     ).to_stdout
   end
 

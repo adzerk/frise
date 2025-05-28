@@ -12,8 +12,8 @@ module Frise
         @__target_object__ ||= @callable.call
       end
 
-      def method_missing(method_name, *args, &block)
-        __target_object__.send(method_name, *args, &block)
+      def method_missing(method_name, *, &)
+        __target_object__.send(method_name, *, &)
       end
 
       def respond_to_missing?(method_name, include_private = false)
