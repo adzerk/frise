@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'frise/parser'
-require 'set'
 
 module Frise
   # Checks if a pre-loaded config object conforms to a schema file.
@@ -25,6 +24,7 @@ module Frise
       class_name = obj.class.to_s
       return 'Boolean' if %w[TrueClass FalseClass].include? class_name
       return 'Integer' if %w[Fixnum Bignum].include? class_name
+
       class_name
     end
 
@@ -68,6 +68,7 @@ module Frise
       allowed_types = %w[Hash Array String Integer Float Object]
       return [Object.const_get(type_key)] if allowed_types.include?(type_key)
       return [TrueClass, FalseClass] if type_key == 'Boolean'
+
       raise "Invalid expected type in schema: #{type_key}"
     end
 
@@ -125,6 +126,7 @@ module Frise
     def validate_spec_keys(full_schema, obj, path, processed_keys)
       full_schema.each do |spec_key, spec_value|
         next if spec_key.is_a?(Symbol)
+
         validate_object(path.empty? ? spec_key : "#{path}.#{spec_key}", obj[spec_key], spec_value)
         processed_keys << spec_key
       end
@@ -139,6 +141,7 @@ module Frise
           validate_object(path, key, full_schema[:all_keys]) if full_schema[:all_keys] && !key.is_a?(Symbol)
 
           next if processed_keys.member? key
+
           if full_schema[:all]
             validate_object(path.empty? ? key : "#{path}.#{key}", value, full_schema[:all])
           elsif !full_schema[:allow_unknown_keys]
@@ -161,6 +164,7 @@ module Frise
 
       processed_keys = Set.new
       return unless validate_spec_keys(full_schema, obj, path, processed_keys)
+
       validate_remaining_keys(full_schema, obj, path, processed_keys)
     end
 
@@ -187,7 +191,6 @@ module Frise
       fatal: nil,
       raise_error: nil
     )
-
       schema = parse_symbols(schema)
       at_path.reverse.each { |key| schema = { key => schema, :allow_unknown_keys => true } }
 

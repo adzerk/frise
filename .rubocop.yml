@@ -1,10 +1,19 @@
 AllCops:
   NewCops: enable
-Layout/EmptyLineAfterGuardClause:
+Documentation:
   Enabled: false
 Metrics:
   Enabled: false
 Naming/BlockParameterName:
   Enabled: false
+Style/SpecialGlobalVars:
+  Enabled: false
+Style/MultipleComparison:
+  Enabled: false
 Naming/MethodParameterName:
+  Enabled: false
+Layout/LineLength:
+  Enabled: true
+  Max: 120
+Style/FormatStringToken:
   Enabled: false

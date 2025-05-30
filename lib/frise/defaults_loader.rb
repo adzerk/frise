@@ -16,7 +16,6 @@ module Frise
       schema_sym: '$schema',
       delete_sym: '$delete'
     )
-
       @include_sym = include_sym
       @content_include_sym = content_include_sym
       @schema_sym = schema_sym
@@ -51,6 +50,7 @@ module Frise
         new_config = {}
         (config.keys + defaults.keys).uniq.each do |key|
           next if SYMBOLS.include?(key)
+
           new_config[key] = config[key]
           new_config[key] = merge_defaults_obj(new_config[key], defaults[key]) if defaults.key?(key)
           new_config[key] = merge_defaults_obj(new_config[key], defaults['$all']) unless new_config[key].nil?
@@ -90,6 +90,7 @@ module Frise
       return 'String' if class_name == 'Hash' && !obj[@content_include_sym].nil?
       return 'Boolean' if %w[TrueClass FalseClass].include? class_name
       return 'Integer' if %w[Fixnum Bignum].include? class_name
+
       class_name
     end
   end

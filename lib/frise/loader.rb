@@ -17,7 +17,6 @@ module Frise
                    pre_loaders: [],
                    validators: nil,
                    exit_on_fail: true)
-
       @include_sym = include_sym
       @content_include_sym = content_include_sym
       @schema_sym = schema_sym
@@ -104,6 +103,7 @@ module Frise
       config = config.to_h do |k, v|
         new_v = process_schemas(v, at_path + [k], global_vars)
         return nil if !v.nil? && new_v.nil?
+
         [k, new_v]
       end
 
@@ -150,10 +150,10 @@ module Frise
       end
     end
 
-    def extract_special(config, key, at_path, &block)
+    def extract_special(config, key, at_path, &)
       case config[key]
       when nil then [config, []]
-      when Array then [config.reject { |k| k == key }, config[key].map(&block)]
+      when Array then [config.reject { |k| k == key }, config[key].map(&)]
       else raise "At #{build_path(at_path)}: illegal value for #{key}: #{config[key].inspect}"
       end
     end
@@ -161,6 +161,7 @@ module Frise
     # merges the `to_merge` value on `config` at path `at_path`
     def merge_at(config, at_path, to_merge)
       return config.merge(to_merge) if at_path.empty?
+
       head, *tail = at_path
       config.merge(head => merge_at(config[head], tail, to_merge))
     end

@@ -18,15 +18,10 @@ Gem::Specification.new do |spec|
     f.match(%r{^(test|spec|features|example)/})
   end
   spec.require_paths = ['lib']
-  spec.required_ruby_version = '>= 2.6.0'
+  spec.required_ruby_version = '>= 3.2.0'
 
-  spec.add_dependency 'liquid', '~> 5.3.0'
+  spec.add_dependency 'base64', '~> 0.2'
+  spec.add_dependency 'liquid', '~> 5'
 
-  spec.add_development_dependency 'bundler', '~> 2.0'
-  spec.add_development_dependency 'rake', '~> 13.0'
-  spec.add_development_dependency 'rspec', '~> 3.9'
-  spec.add_development_dependency 'rubocop', '~> 1.10.0'
-  spec.add_development_dependency 'simplecov', '~> 0.18'
-  spec.add_development_dependency 'simplecov-lcov', '0.8.0'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
